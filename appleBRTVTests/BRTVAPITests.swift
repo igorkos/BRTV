@@ -29,9 +29,22 @@ class BRTVAPITests: XCTestCase {
     
     func testBRTVAPILogin()
     {
-        let expectation = expectationWithDescription("Did connect to BRTV")
+        let expectation = expectationWithDescription("Connected to BRTV server")
         
-        
+        BRTVAPI.sharedInstance.login("scapegracer", password: "cinnamon", completion: {
+            (response: AnyObject?, error: NSError?) in
+            
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is NSDictionary, "Response format is incorrect")
+            
+            XCTAssertNotNil((response as! Dictionary)["clientCredentials"], "")
+            
+            
+            
+            
+            expectation.fulfill()
+        })
 
         
         waitForExpectationsWithTimeout(10, handler: { (error: NSError?) in
