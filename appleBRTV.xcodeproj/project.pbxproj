@@ -14,6 +14,8 @@
 		5F73820F1BC890BE005CFE63 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F73820E1BC890BE005CFE63 /* Assets.xcassets */; };
 		5F73821A1BC890BE005CFE63 /* appleBRTVTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382191BC890BE005CFE63 /* appleBRTVTests.swift */; };
 		5F7382251BC890BE005CFE63 /* appleBRTVUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382241BC890BE005CFE63 /* appleBRTVUITests.swift */; };
+		5F7382331BC890CF005CFE63 /* BRTVAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382321BC890CF005CFE63 /* BRTVAPITests.swift */; };
+		5F7382351BC8914A005CFE63 /* BRTVAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382341BC8914A005CFE63 /* BRTVAPI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		5F7382201BC890BE005CFE63 /* appleBRTVUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = appleBRTVUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F7382241BC890BE005CFE63 /* appleBRTVUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appleBRTVUITests.swift; sourceTree = "<group>"; };
 		5F7382261BC890BE005CFE63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F7382321BC890CF005CFE63 /* BRTVAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BRTVAPITests.swift; sourceTree = "<group>"; };
+		5F7382341BC8914A005CFE63 /* BRTVAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BRTVAPI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +107,7 @@
 				5F73820E1BC890BE005CFE63 /* Assets.xcassets */,
 				5F7382101BC890BE005CFE63 /* Info.plist */,
 				5F7382081BC890BE005CFE63 /* appleBRTV.xcdatamodeld */,
+				5F7382341BC8914A005CFE63 /* BRTVAPI.swift */,
 			);
 			path = appleBRTV;
 			sourceTree = "<group>";
@@ -112,6 +117,7 @@
 			children = (
 				5F7382191BC890BE005CFE63 /* appleBRTVTests.swift */,
 				5F73821B1BC890BE005CFE63 /* Info.plist */,
+				5F7382321BC890CF005CFE63 /* BRTVAPITests.swift */,
 			);
 			path = appleBRTVTests;
 			sourceTree = "<group>";
@@ -255,6 +261,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F7382351BC8914A005CFE63 /* BRTVAPI.swift in Sources */,
 				5F7382071BC890BE005CFE63 /* ViewController.swift in Sources */,
 				5F73820A1BC890BE005CFE63 /* appleBRTV.xcdatamodeld in Sources */,
 				5F7382051BC890BE005CFE63 /* AppDelegate.swift in Sources */,
@@ -265,6 +272,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F7382331BC890CF005CFE63 /* BRTVAPITests.swift in Sources */,
 				5F73821A1BC890BE005CFE63 /* appleBRTVTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
