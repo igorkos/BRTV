@@ -38,7 +38,7 @@ class BRTVAPITests: XCTestCase {
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is NSDictionary, "Response format is incorrect")
             
-            XCTAssertNotNil((response as! Dictionary)["clientCredentials"], "")
+            XCTAssertNotNil(response!["clientCredentials"], "")
             
             
             

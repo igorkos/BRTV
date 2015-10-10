@@ -33,15 +33,25 @@ class BRTVAPI: NSObject {
     func login(username: String, password: String, completion: APIResponseBlock)
     {
         
-        let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        
+        sessionConfig.HTTPAdditionalHeaders = ["Content-Type" : "application/json"]
+        
+        let session = NSURLSession(configuration: sessionConfig)
         let request = NSMutableURLRequest(URL: getFullRequestURL(.ClientService, method: .Login))
         request.HTTPMethod = "POST"
         
-        let data = ["cc": ["appSettings" : applicationName, "siteID" : 0, "settings" : []],
-            "clientCredentials": ["UserLogin": username, "UserPassword" : password]]
+        
+        let data = ["cc": ["appSettings" : ["appName" : applicationName, "siteID" : 0, "settings" : []],
+            "clientCredentials": ["UserLogin": username, "UserPassword" : password, "StbMacAddress": "a4:5e:60:d9:dd:91"]]]
        
+        
         do {
-            let dataStr = try NSJSONSerialization.dataWithJSONObject(data, options: .PrettyPrinted)
+
+            let dataStr = try NSJSONSerialization.dataWithJSONObject(data, options: [])
+            
+            let testStr = String(data: dataStr, encoding: NSUTF8StringEncoding)!
+            print("data: \(testStr)")
             request.HTTPBody = dataStr
             
             let dataTask = session.dataTaskWithRequest(request, completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) in
@@ -55,11 +65,15 @@ class BRTVAPI: NSObject {
                 
                 do
                 {
-                    let jsonData = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
+                    let jsonData = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)
                     completion(response: jsonData, error: nil)
                 }
                 catch let error as NSError
                 {
+                    
+                    print("error: \(error)")
+                    let testErrorStr = String(data: data!, encoding: NSUTF8StringEncoding)
+                    print("server error: \(testErrorStr)")
                     completion(response: nil, error: error)
                 }
                 

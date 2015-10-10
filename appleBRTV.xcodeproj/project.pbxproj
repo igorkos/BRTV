@@ -484,6 +484,7 @@
 				5F73822B1BC890BE005CFE63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5F73822C1BC890BE005CFE63 /* Build configuration list for PBXNativeTarget "appleBRTVTests" */ = {
 			isa = XCConfigurationList;
@@ -492,6 +493,7 @@
 				5F73822E1BC890BE005CFE63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5F73822F1BC890BE005CFE63 /* Build configuration list for PBXNativeTarget "appleBRTVUITests" */ = {
 			isa = XCConfigurationList;
@@ -500,6 +502,7 @@
 				5F7382311BC890BE005CFE63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
