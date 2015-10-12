@@ -16,6 +16,9 @@
 		5F7382251BC890BE005CFE63 /* appleBRTVUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382241BC890BE005CFE63 /* appleBRTVUITests.swift */; };
 		5F7382331BC890CF005CFE63 /* BRTVAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382321BC890CF005CFE63 /* BRTVAPITests.swift */; };
 		5F7382351BC8914A005CFE63 /* BRTVAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382341BC8914A005CFE63 /* BRTVAPI.swift */; };
+		5FFB235C1BCAE69E008EE818 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FFB235B1BCAE69E008EE818 /* AVKit.framework */; };
+		5FFB235E1BCAF9ED008EE818 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFB235D1BCAF9ED008EE818 /* VideoPlayer.swift */; };
+		5FFB23601BCB9DD7008EE818 /* ChannelsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFB235F1BCB9DD7008EE818 /* ChannelsTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +54,9 @@
 		5F7382261BC890BE005CFE63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F7382321BC890CF005CFE63 /* BRTVAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BRTVAPITests.swift; sourceTree = "<group>"; };
 		5F7382341BC8914A005CFE63 /* BRTVAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BRTVAPI.swift; sourceTree = "<group>"; };
+		5FFB235B1BCAE69E008EE818 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		5FFB235D1BCAF9ED008EE818 /* VideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
+		5FFB235F1BCB9DD7008EE818 /* ChannelsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChannelsTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FFB235C1BCAE69E008EE818 /* AVKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +88,7 @@
 		5F7381F81BC890BD005CFE63 = {
 			isa = PBXGroup;
 			children = (
+				5FFB235B1BCAE69E008EE818 /* AVKit.framework */,
 				5F7382031BC890BD005CFE63 /* appleBRTV */,
 				5F7382181BC890BE005CFE63 /* appleBRTVTests */,
 				5F7382231BC890BE005CFE63 /* appleBRTVUITests */,
@@ -102,7 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				5F7382041BC890BE005CFE63 /* AppDelegate.swift */,
-				5F7382061BC890BE005CFE63 /* ViewController.swift */,
+				5FFB23611BCB9DE1008EE818 /* Classes */,
 				5F73820B1BC890BE005CFE63 /* Main.storyboard */,
 				5F73820E1BC890BE005CFE63 /* Assets.xcassets */,
 				5F7382101BC890BE005CFE63 /* Info.plist */,
@@ -129,6 +137,16 @@
 				5F7382261BC890BE005CFE63 /* Info.plist */,
 			);
 			path = appleBRTVUITests;
+			sourceTree = "<group>";
+		};
+		5FFB23611BCB9DE1008EE818 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				5F7382061BC890BE005CFE63 /* ViewController.swift */,
+				5FFB235D1BCAF9ED008EE818 /* VideoPlayer.swift */,
+				5FFB235F1BCB9DD7008EE818 /* ChannelsTableViewController.swift */,
+			);
+			name = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -262,6 +280,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F7382351BC8914A005CFE63 /* BRTVAPI.swift in Sources */,
+				5FFB23601BCB9DD7008EE818 /* ChannelsTableViewController.swift in Sources */,
+				5FFB235E1BCAF9ED008EE818 /* VideoPlayer.swift in Sources */,
 				5F7382071BC890BE005CFE63 /* ViewController.swift in Sources */,
 				5F73820A1BC890BE005CFE63 /* appleBRTV.xcdatamodeld in Sources */,
 				5F7382051BC890BE005CFE63 /* AppDelegate.swift in Sources */,

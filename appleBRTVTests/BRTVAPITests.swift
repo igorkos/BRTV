@@ -11,6 +11,8 @@ import XCTest
 
 class BRTVAPITests: XCTestCase {
     
+    var sessionID: String? = nil
+    
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -38,20 +40,66 @@ class BRTVAPITests: XCTestCase {
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is NSDictionary, "Response format is incorrect")
             
-            XCTAssertNotNil(response!["clientCredentials"], "")
+            XCTAssertNotNil(response!["clientCredentials"], "Response doesn't contain client credentials information")
+            XCTAssertNotNil(response!["clientCredentials"]!!["sessionID"], "Response doesn't containc client session ID")
             
             
+            let res = (response as! NSDictionary)
+            let cred = res["clientCredentials"] as! NSDictionary
             
+            self.sessionID = (cred["sessionID"] as! String)
+            
+            print("SessionID: \(self.sessionID)")
             
             expectation.fulfill()
         })
 
         
-        waitForExpectationsWithTimeout(10, handler: { (error: NSError?) in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
             
-            XCTAssert(error != nil, "Failed to connect to BRTV server")
+            XCTAssertNil(error, "Failed to connect to BRTV server")
             
         })
         
+    }
+    
+    
+    func testBRTVAPIGetChannels()
+    {
+        let expectation = expectationWithDescription("Did get channels")
+        
+        BRTVAPI.sharedInstance.getClientChannels("bd0320a5d0131fa3fe1899f7d1feef2d", completion: { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is NSDictionary, "Response format is incorrect")
+            
+            XCTAssertNotNil(response!["items"], "Response doesn't contain channel items")
+
+            
+            expectation.fulfill()
+        })
+        
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+    }
+    
+    func testBRTVAPIGetURI()
+    {
+        let expectation = expectationWithDescription("did get uri")
+        
+        BRTVAPI.sharedInstance.getStreamURI(24, sessionID: "bd0320a5d0131fa3fe1899f7d1feef2d", completion: { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is NSDictionary, "Response format is incorrect")
+            
+            XCTAssertNotNil(response!["URL"], "Response doesn't contain channel items")
+            print("response: \(response!)")
+            expectation.fulfill()
+        })
+        
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
     }
 }
