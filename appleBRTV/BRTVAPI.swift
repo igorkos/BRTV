@@ -26,7 +26,7 @@ class BRTVAPI: NSObject {
     var applicationName = "IPHONE"
     var serverURL = NSURL(string: "http://ivsmedia.iptv-distribution.net/Json")!
     private let serviceSuffix = ".svc/json/"
-    
+    private var sessionID: String? = nil
     
     
     // MARK: Login
@@ -39,28 +39,61 @@ class BRTVAPI: NSObject {
         let data = ["cc": ["appSettings" : ["appName" : applicationName, "siteID" : 0, "settings" : []],
             "clientCredentials": ["UserLogin": username, "UserPassword" : password]]]
        
-        handlePOSTRequest(request, jsonObject: data, completion: completion)
+        handlePOSTRequest(request, jsonObject: data, completion: { (response: AnyObject?, error: NSError?) in
+            if response is NSDictionary
+            {
+                if let credentials = response!["clientCredentials"] as? NSDictionary
+                {
+                    if let sessionID = credentials["sessionID"] as? String
+                    {
+                        if sessionID.characters.count > 0
+                        {
+                            // successful login
+                            self.sessionID = sessionID
+                            completion(response: response, error: error)
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            completion(response: response, error: NSError(domain: "Login error domain", code: 400, userInfo: nil))
+            
+        })
         
     }
     
     
     // MARK: Channels
-    func getClientChannels(sessionID: String, completion: APIResponseBlock)
+    func getClientChannels(completion: APIResponseBlock)
     {
         let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetClientChannels))
         
-        let dataDict = ["sessionID" : sessionID, "request":["type":4]]
+        if sessionID == nil
+        {
+            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            return;
+        }
+        
+        let dataDict = ["sessionID" : sessionID!, "request":["type":4]]
         
         handlePOSTRequest(request, jsonObject: dataDict, completion: completion)
     }
     
     
     // MARK: Stream URI
-    func getStreamURI(itemID: Int, sessionID: String, completion: APIResponseBlock)
+    func getStreamURI(itemID: Int, completion: APIResponseBlock)
     {
         let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetClientStreamUri))
         
-        let data = ["sessionID" : sessionID, "mediaRequest":[
+        if sessionID == nil
+        {
+            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            return;
+        }
+        
+        
+        let data = ["sessionID" : sessionID!, "mediaRequest":[
             "item" : ["id": itemID, "contentType" : 4],
             "streamSettings" : [
                 "balancingArea" : ["id" : 4],

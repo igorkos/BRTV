@@ -18,9 +18,8 @@ class VideoPlayer: AVPlayerViewController {
         
         assert(itemID != nil, "Item id is nil")
         print("item id: \(itemID)")
-        if let sessionID = NSUserDefaults.standardUserDefaults().objectForKey("sessionID")
-        {
-            BRTVAPI.sharedInstance.getStreamURI(itemID!, sessionID: sessionID as! String, completion: { (response: AnyObject?, error: NSError?) in
+        
+            BRTVAPI.sharedInstance.getStreamURI(itemID!, completion: { (response: AnyObject?, error: NSError?) in
                 
                 let urlStr = response!["URL"] as! String
                 let url = NSURL(string: urlStr)!
@@ -29,12 +28,6 @@ class VideoPlayer: AVPlayerViewController {
                 self.player?.play()
             })
         
-        
-        }
-        else
-        {
-            print("no sessionID found")
-        }
         
         
     }

@@ -26,20 +26,15 @@ class ChannelsTableViewController: UITableViewController {
 //            
 //        });
         
-        if let sessionID = NSUserDefaults.standardUserDefaults().objectForKey("sessionID")
-        {
-            BRTVAPI.sharedInstance.getClientChannels(sessionID as! String, completion: { (response: AnyObject?, error: NSError?) in
+      
+            BRTVAPI.sharedInstance.getClientChannels({ (response: AnyObject?, error: NSError?) in
                 
                 self.channelsData = response!["items"] as! Array
                 dispatch_async(dispatch_get_main_queue(), {
                     self.tableView.reloadData()
                 })
             })
-        }
-        else
-        {
-            print("no sessionID found")
-        }
+       
        
     }
 

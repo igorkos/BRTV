@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="9058" systemVersion="15A284" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="9058" systemVersion="15A284" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" initialViewController="L4G-me-zym">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9048"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="SF-UI-Display-Medium.otf">
+            <string>SFUIDisplay-Medium</string>
+        </mutableArray>
+        <mutableArray key="SF-UI-Text-Regular.otf">
+            <string>SFUIText-Regular</string>
+        </mutableArray>
+    </customFonts>
     <scenes>
         <!--AV Player View Controller-->
         <scene sceneID="scg-4B-MN5">
@@ -10,9 +18,9 @@
                 <avPlayerViewController videoGravity="AVLayerVideoGravityResizeAspect" id="BAV-cu-Nti" customClass="VideoPlayer" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="U2e-Io-CDj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="237" y="-1087"/>
+            <point key="canvasLocation" x="813" y="-927"/>
         </scene>
-        <!--Channels Table View Controller-->
+        <!--All Channels-->
         <scene sceneID="FYv-wM-2iV">
             <objects>
                 <tableViewController id="fkk-eN-sez" customClass="ChannelsTableViewController" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController">
@@ -22,7 +30,7 @@
                         <animations/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" misplaced="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ChannelCell" textLabel="0jr-nc-apY" style="IBUITableViewCellStyleDefault" id="sKR-Lh-IzU">
-                                <rect key="frame" x="0.0" y="54" width="1920" height="66"/>
+                                <rect key="frame" x="0.0" y="194" width="1920" height="66"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="sKR-Lh-IzU" id="VMq-OF-NVC">
                                     <rect key="frame" x="0.0" y="0.0" width="1844" height="66"/>
@@ -50,15 +58,16 @@
                             <outlet property="delegate" destination="fkk-eN-sez" id="krx-3C-cCV"/>
                         </connections>
                     </tableView>
+                    <tabBarItem key="tabBarItem" title="All Channels" id="Hof-uA-4qc"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0d3-QH-QGX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2051" y="-118"/>
+            <point key="canvasLocation" x="-1291" y="-914"/>
         </scene>
-        <!--View Controller-->
+        <!--Login View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="LoginViewController" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -67,30 +76,127 @@
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wbb-y5-iNE">
-                                <rect key="frame" x="873" y="497" width="174" height="86"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Best Russin TV Sign In" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dpi-Q4-NNv">
+                                <rect key="frame" x="678" y="125" width="564" height="69"/>
                                 <animations/>
-                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
-                                <state key="normal" title="Login"/>
+                                <fontDescription key="fontDescription" name="SFUIDisplay-Medium" family="SF UI Display" pointSize="57"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please login with your Best Russian TV credentials.  For more information or to register please visit bestrussiantv.com" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DYq-Pk-Ly2">
+                                <rect key="frame" x="515" y="210" width="890" height="70"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" name="SFUIText-Regular" family="SF UI Text" pointSize="29"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZMR-7Q-0X1">
+                                <rect key="frame" x="660" y="454" width="600" height="66"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="600" id="gsd-f9-Bhu"/>
+                                    <constraint firstAttribute="height" constant="66" id="q8e-Y6-dhI"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go" enablesReturnKeyAutomatically="YES" secureTextEntry="YES"/>
                                 <connections>
-                                    <action selector="login:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="blk-2a-tAo"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="szv-gY-NIv"/>
+                                </connections>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ndh-XD-y6n">
+                                <rect key="frame" x="863" y="613" width="195" height="86"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="86" id="MC9-4G-irV"/>
+                                    <constraint firstAttribute="width" constant="195" id="lKw-lS-JTG"/>
+                                </constraints>
+                                <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
+                                <state key="normal" title="Sign In"/>
+                                <connections>
+                                    <action selector="login:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="Sdx-eT-G2d"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="zOj-id-Pyl">
+                                <rect key="frame" x="660" y="346" width="600" height="66"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="66" id="9de-2I-Mt8"/>
+                                    <constraint firstAttribute="width" constant="600" id="grZ-CE-gp6"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="pGt-By-FWa"/>
+                                </connections>
+                            </textField>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="wbb-y5-iNE" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="2lY-sL-s0R"/>
-                            <constraint firstItem="wbb-y5-iNE" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BFZ-w8-yHe"/>
+                            <constraint firstItem="Dpi-Q4-NNv" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="125" id="0h7-f4-uaM"/>
+                            <constraint firstItem="DYq-Pk-Ly2" firstAttribute="top" secondItem="Dpi-Q4-NNv" secondAttribute="bottom" constant="16" id="6Dt-8g-78t"/>
+                            <constraint firstItem="ndh-XD-y6n" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="DU0-Bd-WWe"/>
+                            <constraint firstItem="ZMR-7Q-0X1" firstAttribute="top" secondItem="zOj-id-Pyl" secondAttribute="bottom" constant="42" id="K9o-sg-hVq"/>
+                            <constraint firstItem="zOj-id-Pyl" firstAttribute="top" secondItem="DYq-Pk-Ly2" secondAttribute="bottom" constant="66" id="TX7-fb-cgw"/>
+                            <constraint firstItem="Dpi-Q4-NNv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hDn-7a-S3K"/>
+                            <constraint firstItem="ndh-XD-y6n" firstAttribute="top" secondItem="ZMR-7Q-0X1" secondAttribute="bottom" constant="93" id="ilr-Tf-MNy"/>
+                            <constraint firstItem="ZMR-7Q-0X1" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="lHg-Qe-R9H"/>
+                            <constraint firstItem="DYq-Pk-Ly2" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="pjk-g8-x01"/>
+                            <constraint firstItem="zOj-id-Pyl" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="van-wR-fZa"/>
                         </constraints>
                     </view>
                     <connections>
-                        <segue destination="fkk-eN-sez" kind="show" identifier="ViewChannels" id="VFQ-GL-6rw"/>
+                        <outlet property="passwordTextField" destination="ZMR-7Q-0X1" id="KQQ-wc-Oa5"/>
+                        <outlet property="usernameTextField" destination="zOj-id-Pyl" id="Stj-1d-QSK"/>
+                        <segue destination="idk-Cl-UVk" kind="show" identifier="GoToHomePage" id="5sx-vx-Gu2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4251" y="-131"/>
+            <point key="canvasLocation" x="-3419" y="1573"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="FMb-Xg-DzG">
+            <objects>
+                <tabBarController id="idk-Cl-UVk" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="CFm-0W-BFL">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="140"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="fkk-eN-sez" kind="relationship" relationship="viewControllers" id="ZR6-as-Rgg"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="I4l-hW-Jad" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3687" y="-830"/>
+        </scene>
+        <!--Splash Screen View Controller-->
+        <scene sceneID="9Uy-oK-ujX">
+            <objects>
+                <viewController id="L4G-me-zym" customClass="SplashScreenViewController" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="mdu-Gi-vPj"/>
+                        <viewControllerLayoutGuide type="bottom" id="kV3-w2-hpo"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="9TG-yw-0XX">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                    </view>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="ShowLogin" id="ayM-eN-6ol"/>
+                        <segue destination="idk-Cl-UVk" kind="show" identifier="GoToHomePage" id="wA9-KB-rJT"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qU8-Gi-jCk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-5631" y="1186"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="wA9-KB-rJT"/>
+    </inferredMetricsTieBreakers>
 </document>
