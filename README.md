@@ -6,3 +6,6 @@ Master branch is on v 0.0.1 - which is the first alpha containing the following 
 * You can login with your bestrussiantv.com credentials
 * You can watch bestrussiantv.com LiveTV service
 * You can logout in "Settings" tab
+
+
+*Refactoring is an ongoing process;)*
