@@ -15,6 +15,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
+    var completion: (()->())? = nil
+    
     @IBAction func login(sender: AnyObject) {
         
         
@@ -24,20 +26,28 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         
         BRTVAPI.sharedInstance.login(usernameTextField.text!, password: passwordTextField.text!, completion: {
-            (response: AnyObject?, error: NSError?) in
+            [weak self](response: AnyObject?, error: NSError?) in
             
             if (error != nil)
             {
                 let alert = UIAlertController(title: "Failed to login", message: "Please check you login details and try again", preferredStyle: .Alert)
                 alert.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                self?.presentViewController(alert, animated: true, completion: nil)
             }
             else
             {
-                let cred = NSURLCredential(user: self.usernameTextField.text!, password: self.passwordTextField.text!, persistence: .Permanent)
-                NSURLCredentialStorage.sharedCredentialStorage().setCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
+                if self != nil
+                {
+                    let cred = NSURLCredential(user: self!.usernameTextField.text!, password: self!.passwordTextField.text!, persistence: .Permanent)
+                    NSURLCredentialStorage.sharedCredentialStorage().setCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
+                    
+                    if self!.completion != nil
+                    {
+                        self!.completion!()
+                    }
+
+                }
                 
-                self.performSegueWithIdentifier("GoToHomePage", sender: self)
             }
                         
     
@@ -49,8 +59,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        
+
     }
 
     override func didReceiveMemoryWarning() {

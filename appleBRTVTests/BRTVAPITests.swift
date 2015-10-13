@@ -33,7 +33,10 @@ class BRTVAPITests: XCTestCase {
     {
         let expectation = expectationWithDescription("Connected to BRTV server")
         
-        BRTVAPI.sharedInstance.login("scapegracer", password: "cinnamon", completion: {
+        let username = ""
+        let password = ""
+        
+        BRTVAPI.sharedInstance.login(username, password: password, completion: {
             (response: AnyObject?, error: NSError?) in
             
             XCTAssertNil(error, "There was an error returned by the API handler")

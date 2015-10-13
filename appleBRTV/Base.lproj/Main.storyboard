@@ -67,7 +67,7 @@
         <!--Login View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="LoginViewController" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="LoginViewController" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -148,7 +148,6 @@
                     <connections>
                         <outlet property="passwordTextField" destination="ZMR-7Q-0X1" id="KQQ-wc-Oa5"/>
                         <outlet property="usernameTextField" destination="zOj-id-Pyl" id="Stj-1d-QSK"/>
-                        <segue destination="idk-Cl-UVk" kind="show" identifier="GoToHomePage" id="5sx-vx-Gu2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -158,7 +157,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="FMb-Xg-DzG">
             <objects>
-                <tabBarController id="idk-Cl-UVk" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="HomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="idk-Cl-UVk" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" id="CFm-0W-BFL">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="140"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -186,17 +185,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                     </view>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="ShowLogin" id="ayM-eN-6ol"/>
-                        <segue destination="idk-Cl-UVk" kind="show" identifier="GoToHomePage" id="wA9-KB-rJT"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qU8-Gi-jCk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-5631" y="1186"/>
+            <point key="canvasLocation" x="-6275" y="590"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="wA9-KB-rJT"/>
-    </inferredMetricsTieBreakers>
 </document>
