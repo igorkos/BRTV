@@ -17,6 +17,7 @@
 		5F7382251BC890BE005CFE63 /* appleBRTVUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382241BC890BE005CFE63 /* appleBRTVUITests.swift */; };
 		5F7382331BC890CF005CFE63 /* BRTVAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382321BC890CF005CFE63 /* BRTVAPITests.swift */; };
 		5F7382351BC8914A005CFE63 /* BRTVAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7382341BC8914A005CFE63 /* BRTVAPI.swift */; };
+		5F823EF11BCD954D00CDDA07 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F823EF01BCD954D00CDDA07 /* SettingsTableViewController.swift */; };
 		5F87A8C41BCC772C00BD0D41 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F87A8C31BCC772C00BD0D41 /* Functions.swift */; };
 		5FFB235C1BCAE69E008EE818 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FFB235B1BCAE69E008EE818 /* AVKit.framework */; };
 		5FFB235E1BCAF9ED008EE818 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFB235D1BCAF9ED008EE818 /* VideoPlayer.swift */; };
@@ -78,6 +79,7 @@
 		5F7382261BC890BE005CFE63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F7382321BC890CF005CFE63 /* BRTVAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BRTVAPITests.swift; sourceTree = "<group>"; };
 		5F7382341BC8914A005CFE63 /* BRTVAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BRTVAPI.swift; sourceTree = "<group>"; };
+		5F823EF01BCD954D00CDDA07 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		5F87A8C31BCC772C00BD0D41 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		5FFB235B1BCAE69E008EE818 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		5FFB235D1BCAF9ED008EE818 /* VideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 				5FFB235F1BCB9DD7008EE818 /* ChannelsTableViewController.swift */,
 				5F21D6561BCBF63000059CAD /* SplashScreenViewController.swift */,
 				5F87A8C31BCC772C00BD0D41 /* Functions.swift */,
+				5F823EF01BCD954D00CDDA07 /* SettingsTableViewController.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 				5F7382071BC890BE005CFE63 /* LoginViewController.swift in Sources */,
 				5F73820A1BC890BE005CFE63 /* appleBRTV.xcdatamodeld in Sources */,
 				5F7382051BC890BE005CFE63 /* AppDelegate.swift in Sources */,
+				5F823EF11BCD954D00CDDA07 /* SettingsTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -56,7 +56,27 @@ class SplashScreenViewController: UIViewController {
         }
         
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("handleLogout"), name: "logout", object: nil)
     }
+    
+    func handleLogout()
+    {
+        
+        if let credentials = NSURLCredentialStorage.sharedCredentialStorage().credentialsForProtectionSpace(Functions.getUrlProtectionSpace())
+        {
+            // try login
+            let key = credentials.keys.first!
+            
+            if let cred = credentials[key]
+            {
+                NSURLCredentialStorage.sharedCredentialStorage().removeCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
+            }
+        }
+        
+        removeCurrentVC()
+        presentLoginPage()
+    }
+    
     
     func presentLoginPage()
     {
@@ -65,6 +85,7 @@ class SplashScreenViewController: UIViewController {
             
             login.completion = { [weak self]() in
                 
+                self?.removeCurrentVC()
                 self?.presentHomePage()
                 
             }
@@ -82,6 +103,16 @@ class SplashScreenViewController: UIViewController {
 
     }
     
+    func removeCurrentVC()
+    {
+        if let vc = self.childViewControllers.last
+        {
+            vc.willMoveToParentViewController(nil)
+            vc.view.removeFromSuperview()
+            vc.removeFromParentViewController()
+        }
+        
+    }
     
     func presentHomePage()
     {

@@ -64,6 +64,55 @@
             </objects>
             <point key="canvasLocation" x="-1291" y="-914"/>
         </scene>
+        <!--Settings-->
+        <scene sceneID="bYo-8i-OBT">
+            <objects>
+                <tableViewController id="vsN-d0-jQs" customClass="SettingsTableViewController" customModule="appleBRTV" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="66" sectionHeaderHeight="40" sectionFooterHeight="40" id="1gi-yn-4Se">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" misplaced="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="RightDetail" textLabel="gMe-qq-MWM" detailTextLabel="Zvg-cJ-9ci" style="IBUITableViewCellStyleValue1" id="CBj-t6-zLb">
+                                <rect key="frame" x="0.0" y="194" width="1920" height="66"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="CBj-t6-zLb" id="G3Y-Tg-lB5">
+                                    <rect key="frame" x="0.0" y="0.0" width="1904" height="66"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gMe-qq-MWM">
+                                            <rect key="frame" x="20" y="10" width="72" height="46"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <animations/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zvg-cJ-9ci">
+                                            <rect key="frame" x="1788" y="10" width="96" height="46"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <animations/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.40000000000000002" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <animations/>
+                                </tableViewCellContentView>
+                                <animations/>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="vsN-d0-jQs" id="sfp-hJ-Tvm"/>
+                            <outlet property="delegate" destination="vsN-d0-jQs" id="BKl-OZ-Hbj"/>
+                        </connections>
+                    </tableView>
+                    <tabBarItem key="tabBarItem" title="Settings" id="Iv4-DG-upB"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lxf-zi-tiJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1507" y="398"/>
+        </scene>
         <!--Login View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -76,8 +125,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Best Russin TV Sign In" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dpi-Q4-NNv">
-                                <rect key="frame" x="678" y="125" width="564" height="69"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Best Russian TV Sign In" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dpi-Q4-NNv">
+                                <rect key="frame" x="663" y="125" width="594" height="69"/>
                                 <animations/>
                                 <fontDescription key="fontDescription" name="SFUIDisplay-Medium" family="SF UI Display" pointSize="57"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -104,11 +153,11 @@
                                 </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ndh-XD-y6n">
-                                <rect key="frame" x="863" y="613" width="195" height="86"/>
+                                <rect key="frame" x="846" y="613" width="229" height="86"/>
                                 <animations/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="86" id="MC9-4G-irV"/>
-                                    <constraint firstAttribute="width" constant="195" id="lKw-lS-JTG"/>
+                                    <constraint firstAttribute="width" constant="229" id="lKw-lS-JTG"/>
                                 </constraints>
                                 <inset key="contentEdgeInsets" minX="40" minY="20" maxX="40" maxY="20"/>
                                 <state key="normal" title="Sign In"/>
@@ -166,6 +215,7 @@
                     </tabBar>
                     <connections>
                         <segue destination="fkk-eN-sez" kind="relationship" relationship="viewControllers" id="ZR6-as-Rgg"/>
+                        <segue destination="vsN-d0-jQs" kind="relationship" relationship="viewControllers" id="OVN-t0-cxL"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I4l-hW-Jad" userLabel="First Responder" sceneMemberID="firstResponder"/>

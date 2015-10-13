@@ -20,7 +20,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBAction func login(sender: AnyObject) {
         
         
-        if loginDetailsEntered() == false
+        if loginDetailsEntered(true) == false
         {
             return;
         }
@@ -28,28 +28,31 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         BRTVAPI.sharedInstance.login(usernameTextField.text!, password: passwordTextField.text!, completion: {
             [weak self](response: AnyObject?, error: NSError?) in
             
-            if (error != nil)
-            {
-                let alert = UIAlertController(title: "Failed to login", message: "Please check you login details and try again", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-                self?.presentViewController(alert, animated: true, completion: nil)
-            }
-            else
-            {
-                if self != nil
+            dispatch_async(dispatch_get_main_queue(), {
+                if (error != nil)
                 {
-                    let cred = NSURLCredential(user: self!.usernameTextField.text!, password: self!.passwordTextField.text!, persistence: .Permanent)
-                    NSURLCredentialStorage.sharedCredentialStorage().setCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
-                    
-                    if self!.completion != nil
-                    {
-                        self!.completion!()
-                    }
-
+                    let alert = UIAlertController(title: "Failed to login", message: "Please check you login details and try again", preferredStyle: .Alert)
+                    alert.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
+                    self?.presentViewController(alert, animated: true, completion: nil)
                 }
-                
-            }
+                else
+                {
+                    if self != nil
+                    {
+                        let cred = NSURLCredential(user: self!.usernameTextField.text!, password: self!.passwordTextField.text!, persistence: .Permanent)
+                        NSURLCredentialStorage.sharedCredentialStorage().setCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
                         
+                        if self!.completion != nil
+                        {
+                            self!.completion!()
+                        }
+                        
+                    }
+                    
+                }
+
+            })
+            
     
         })
         
@@ -69,7 +72,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     // MARK: Helpers
-    func loginDetailsEntered() -> Bool
+    func loginDetailsEntered(showAlert: Bool) -> Bool
     {
         if  usernameTextField.text?.characters.count == 0 || passwordTextField.text?.characters.count == 0
         {
@@ -89,23 +92,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     // MARK: Text Field
-    
-    func textFieldDidEndEditing(textField: UITextField) {
-        if textField == usernameTextField
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+
+        if textField == passwordTextField
         {
-            passwordTextField.becomeFirstResponder()
-        }
-        else
-        {
-            passwordTextField.resignFirstResponder()
-            
-            
-            if loginDetailsEntered() == true
+
+            if loginDetailsEntered(false) == true
             {
                 login(self)
             }
         }
+        return true
     }
+    
+    
     
     
 

@@ -20,10 +20,5 @@ class Functions: NSObject {
         return protectionSpace
     }
 
-    
-    // Used to remove splash and login from navigation stacks where necessary (so back takes to the apple tv screen)
-    class func clearNavigationStack()
-    {
-        
-    }
+
 }
