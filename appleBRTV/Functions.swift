@@ -18,7 +18,6 @@ class Functions: NSObject {
         let protectionSpace = NSURLProtectionSpace(host: url.host!, port: 8000, `protocol`: url.scheme, realm: nil, authenticationMethod: NSURLAuthenticationMethodHTTPDigest)
         
         return protectionSpace
-    }
-
+    }    
 
 }

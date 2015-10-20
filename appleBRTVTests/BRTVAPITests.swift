@@ -29,12 +29,12 @@ class BRTVAPITests: XCTestCase {
         
     }
     
-    func testBRTVAPILogin()
+    func test_00_BRTVAPILogin()
     {
         let expectation = expectationWithDescription("Connected to BRTV server")
         
-        let username = ""
-        let password = ""
+        let username = "igorkos"
+        let password = "rutv12"
         
         BRTVAPI.sharedInstance.login(username, password: password, completion: {
             (response: AnyObject?, error: NSError?) in
@@ -67,18 +67,83 @@ class BRTVAPITests: XCTestCase {
     }
     
     
-    func testBRTVAPIGetChannels()
+    func test_01_BRTVAPIGetChannels()
     {
         let expectation = expectationWithDescription("Did get channels")
         
-        BRTVAPI.sharedInstance.getClientChannels("bd0320a5d0131fa3fe1899f7d1feef2d", completion: { (response: AnyObject?, error: NSError?) in
+        BRTVAPI.sharedInstance.getClientChannels( { (response: AnyObject?, error: NSError?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is NSDictionary, "Response format is incorrect")
             
             XCTAssertNotNil(response!["items"], "Response doesn't contain channel items")
-
+         //   print(response)
             
+            expectation.fulfill()
+        })
+        //"bd0320a5d0131fa3fe1899f7d1feef2d",
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+    }
+    
+    func test_02_BRTVAPIGetTVGrid()
+    {
+        let expectation = expectationWithDescription("Did get tvgrid")
+        let start = NSDate(timeIntervalSinceNow:-1800)
+        let end  = NSDate(timeIntervalSinceNow:18000)
+
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is NSDictionary, "Response format is incorrect")
+            print(response)
+//            XCTAssertNotNil(response!["items"], "Response doesn't contain channel items")
+            
+            
+            expectation.fulfill()
+        })
+        //"bd0320a5d0131fa3fe1899f7d1feef2d",
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+    }
+
+    func test_03_BRTVAPIGetArchiveChannels()
+    {
+        let expectation = expectationWithDescription("Did get channels")
+        
+        BRTVAPI.sharedInstance.getClientArchiveChannels( { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            if response != nil {
+                XCTAssert(response is NSDictionary, "Response format is incorrect")
+                XCTAssertNotNil(response!["items"], "Response doesn't contain channel items")
+           //     print(response)
+            }
+            
+            
+            expectation.fulfill()
+        })
+        //"bd0320a5d0131fa3fe1899f7d1feef2d",
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+    }
+
+    
+    
+    func test_04_BRTVAPIGetURI()
+    {
+        let expectation = expectationWithDescription("did get uri")
+        
+        BRTVAPI.sharedInstance.getStreamURI(24,  completion: { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is NSDictionary, "Response format is incorrect")
+            
+            XCTAssertNotNil(response!["URL"], "Response doesn't contain channel items")
+        //    print("response: \(response!)")
             expectation.fulfill()
         })
         
@@ -87,16 +152,13 @@ class BRTVAPITests: XCTestCase {
         })
     }
     
-    func testBRTVAPIGetURI()
+    func test_05_BRTVAPIGetImageURI()
     {
         let expectation = expectationWithDescription("did get uri")
         
-        BRTVAPI.sharedInstance.getStreamURI(24, sessionID: "bd0320a5d0131fa3fe1899f7d1feef2d", completion: { (response: AnyObject?, error: NSError?) in
+        BRTVAPI.sharedInstance.getImageURIs(1, mediaType: .ChanelLogoTransparent, index: 1, completion: { (response: AnyObject?, error: NSError?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
-            XCTAssert(response is NSDictionary, "Response format is incorrect")
-            
-            XCTAssertNotNil(response!["URL"], "Response doesn't contain channel items")
             print("response: \(response!)")
             expectation.fulfill()
         })
@@ -105,4 +167,37 @@ class BRTVAPITests: XCTestCase {
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
+    
+    func test_06_BRTVAPIgetMediaImageType()
+    {
+        let expectation = expectationWithDescription("did get uri")
+        
+        BRTVAPI.sharedInstance.getMediaImageType( { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            print("response: \(response!)")
+            expectation.fulfill()
+        })
+        
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+    }
+    
+    func test_07_BRTVAPIgetMediaZoneInfo()
+    {
+        let expectation = expectationWithDescription("did get uri")
+        
+        BRTVAPI.sharedInstance.getMediaZoneInfo( { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            print("response: \(response!)")
+            expectation.fulfill()
+        })
+        
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+    }
+
 }
