@@ -11,8 +11,9 @@ import UIKit
 
 class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource {
 
-    var channelsData: TVGrid? = nil
+    var channelsData: TVGrid = TVGrid()
     var tvGridStartTime: NSDate? = nil
+    var tvGridEndTime: NSDate? = nil
     var tvGridCurrentTime: NSDate? = nil
     @IBOutlet var timeGrid : UICollectionView!
     @IBOutlet var tableView: UITableView!
@@ -34,15 +35,24 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
         
         tvGridStartTime = NSDate().closestTo(30)
         tvGridCurrentTime = tvGridStartTime
-        let end  = NSDate(timeIntervalSinceNow:3600*24)
-            BRTVAPI.sharedInstance.getClientTVGrid(tvGridStartTime!, end: end, page: 1, completion: { (response: AnyObject?, error: NSError?) in
-                self.channelsData = TVGrid(withData: response as? [String:AnyObject])
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.tableView.reloadData()
-                })
-            })
+        tvGridEndTime  = NSDate(timeIntervalSinceNow:3600*24)
+        loadTVGrid(1)
+        
        
        timeLabel.text = NSDate().toShortTimeString()
+    }
+    
+    private func loadTVGrid( page: Int){
+        
+        BRTVAPI.sharedInstance.getClientTVGrid(tvGridStartTime!, end: tvGridEndTime!, page: page, completion: { (response: AnyObject?, error: NSError?) in
+            let paging = self.channelsData.updateGrid((response as? [String:AnyObject])!)
+            if paging.page != paging.totalPages {
+                self.loadTVGrid( paging.page + 1)
+            }
+            dispatch_async(dispatch_get_main_queue(), {
+                self.tableView.reloadData()
+            })
+        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -65,10 +75,7 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
     // MARK: - Table view data source
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int{
-        guard channelsData != nil else {
-            return 0
-        }
-        return channelsData!.count
+        return channelsData.count
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -88,7 +95,7 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
 
         // Configure the cell...
         
-        cell.channelData = channelsData![indexPath.section]
+        cell.channelData = channelsData[indexPath.section]
         cell.controller = self
         return cell
     }

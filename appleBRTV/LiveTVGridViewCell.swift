@@ -18,6 +18,11 @@ class LiveTVGridViewCell: UICollectionViewCell {
             title?.text = programData![.name] as? String
         }
     }
+    
+    override func prepareForReuse(){
+        super.prepareForReuse()
+        self.backgroundColor = UIColor.whiteColor()
+    }
 }
 
 class LiveTVTimeGridViewCell: UICollectionViewCell {

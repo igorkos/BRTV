@@ -22,10 +22,8 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     var channelData: TVGridChannel? = nil {
         didSet{
             channelId?.text = "\(channelData![.accessNum] as! Int)"
-            BRTVAPI.sharedInstance.getImageURIs(channelData![.id] as! Int, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, completion: {(response: AnyObject?, error: NSError?) in
-                let imageURL = NSURL(string: response as! String)!
-                self.channelIcon!.load(imageURL)
-        })
+            BRTVAPI.sharedInstance.loadImage(channelData![.id] as! Int, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, imageView: channelIcon!)
+            collectionView?.reloadData()
         }
     }
     
@@ -108,18 +106,11 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
         return CGSizeMake(width, 120)
     }
     
-    func scrollViewDidScroll(scrollView: UIScrollView){
-      //  let width = ((self.collectionView?.frame.width)!/240.0) //On minute size
-      //  let offset = scrollView.contentOffset.x//ofset in
-    //    print("Scroll of row \(self.channelData![.name]) : \(offset)")
-      
-    }
     
     func scrollViewDidEndDecelerating(scrollView: UIScrollView){
      //let width = ((self.collectionView?.frame.width)!/240.0) //On minute size
         let offset = scrollView.contentOffset.x///width //ofset in min
         controller?.offsetTimeTable(offset)
-        print("EndDecelerating of row \(self.channelData![.name]) : \(offset)")
     }
     
 }

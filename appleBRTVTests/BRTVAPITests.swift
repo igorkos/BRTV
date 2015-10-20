@@ -154,7 +154,7 @@ class BRTVAPITests: XCTestCase {
     
     func test_05_BRTVAPIGetImageURI()
     {
-        let expectation = expectationWithDescription("did get uri")
+        let expectation = expectationWithDescription("did get GetImageURI")
         
         BRTVAPI.sharedInstance.getImageURIs(1, mediaType: .ChanelLogoTransparent, index: 1, completion: { (response: AnyObject?, error: NSError?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
@@ -170,7 +170,7 @@ class BRTVAPITests: XCTestCase {
     
     func test_06_BRTVAPIgetMediaImageType()
     {
-        let expectation = expectationWithDescription("did get uri")
+        let expectation = expectationWithDescription("did get MediaImageType")
         
         BRTVAPI.sharedInstance.getMediaImageType( { (response: AnyObject?, error: NSError?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
@@ -186,7 +186,7 @@ class BRTVAPITests: XCTestCase {
     
     func test_07_BRTVAPIgetMediaZoneInfo()
     {
-        let expectation = expectationWithDescription("did get uri")
+        let expectation = expectationWithDescription("did get MediaZoneInfo")
         
         BRTVAPI.sharedInstance.getMediaZoneInfo( { (response: AnyObject?, error: NSError?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
@@ -200,4 +200,43 @@ class BRTVAPITests: XCTestCase {
         })
     }
 
+    func loadGrid(page:Int) -> [String:AnyObject]?{
+        
+        let expectation = expectationWithDescription("did get TVGridFullLoad")
+        
+        let start = NSDate(timeIntervalSinceNow:-1800)
+        let end  = NSDate(timeIntervalSinceNow:18000)
+        var data : [String:AnyObject]? = nil
+        
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: page, completion: { (response: AnyObject?, error: NSError?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is NSDictionary, "Response format is incorrect")
+            
+            print(response)
+            data = response as? [String:AnyObject]
+            expectation.fulfill()
+        })
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+        return data
+    }
+    
+    func test_08_BRTVAPIGetTVGridFullLoad()
+    {
+        let tvgrid : TVGrid = TVGrid()
+        var nextPage = 1
+        repeat{
+            let response = loadGrid(nextPage++)
+            let paging = tvgrid.updateGrid(response!)
+            print(paging)
+            if paging.totalPages == paging.page{
+                break
+            }
+        }while(true)
+        
+        print("loaded \(tvgrid.paging![.totalPages]) pages with \(tvgrid.count) chanels")
+        
+    }
 }

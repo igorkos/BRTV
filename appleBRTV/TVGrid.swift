@@ -7,6 +7,7 @@
 //
 
 import UIKit
+
 class TVGridProgram {
     enum Keys : String {
         case advisory,// Program advisory
@@ -150,6 +151,32 @@ class TVGridChannel {
     }
 }
 
+class ItemPaging{
+    private var paging : [String:AnyObject]? = nil
+
+    enum Keys : String {
+        case itemsOnPage, //Desired number of items per page
+        pageNumber,//Requested page number.
+        totalItems,//Total number of items
+        totalPages//Total number of pages    
+    }
+    
+    init( withData data: [String:AnyObject]){
+        paging = data
+    }
+    
+    subscript(key: Keys) -> AnyObject?{
+        get
+        {
+            return paging?[key.rawValue]
+        }
+        set(value)
+        {
+            paging?[key.rawValue] = value
+        }
+    }
+}
+
 class TVGrid {
     
     enum Keys : String {
@@ -158,11 +185,9 @@ class TVGrid {
     }
 
     
-    var grid : [String:AnyObject]?
-    
-    init(withData data:[String:AnyObject]?) {
-        self.grid = data
-    }
+    var grid : [String:AnyObject]? = nil
+    var channels : [[String:AnyObject]]? = nil
+    var paging : ItemPaging? = nil
     
     subscript(key: Keys) -> AnyObject?{
         get
@@ -179,21 +204,48 @@ class TVGrid {
         {
         get
         {
-            let channels =  self[.grid] as! [[String:AnyObject]]
-            guard channels.count > index  else {
+            guard channels!.count > index  else {
                 assert(false, "Index out of range")
                 return nil
             }
-            let channel = TVGridChannel(withData: channels[index])
+            let channel = TVGridChannel(withData: channels![index])
             return channel
         }
     }
 
     var count : Int {
         get{
-            let channels =  self[.grid] as! [[String:AnyObject]]
-            return channels.count
+            guard channels != nil else {
+                return 0
+            }
+            return channels!.count
         }
     }
     
+    func updateGrid(gridData:[String:AnyObject]) -> (page : Int, totalPages : Int){
+        guard grid != nil else {
+            grid = gridData
+            channels = self[.grid] as? [[String:AnyObject]]
+            paging = ItemPaging(withData: self[.paging] as! [String:AnyObject])
+            return ( (paging![.pageNumber] as! Int), paging![.totalPages] as! Int)
+        }
+        
+        paging = ItemPaging(withData: gridData[Keys.paging.rawValue] as! [String:AnyObject])
+        let page = (paging![.pageNumber] as! Int) - 1
+        let itemsOnPage = paging![.itemsOnPage] as! Int
+        var itemStartIndex = page*itemsOnPage
+        let newChannels = gridData[Keys.grid.rawValue] as! [[String:AnyObject]]
+        for chanel in newChannels {
+            channels?.insert(chanel, atIndex: itemStartIndex++ )
+        }
+        return ( (paging![.pageNumber] as! Int), paging![.totalPages] as! Int)
+    }
+    
+}
+
+class TVGridDataSource {
+    static let sharedInstance = TVGridDataSource()
+    
+    
+
 }

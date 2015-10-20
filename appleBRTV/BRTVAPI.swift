@@ -38,13 +38,15 @@ class BRTVAPI: NSObject {
 
     static let sharedInstance = BRTVAPI()
     var applicationName = "IPHONE"
-    var serverURL = NSURL(string: "http://ivsmedia.iptv-distribution.net/Json")!
+    var imageURLTemplate : String? = nil
+    private var serverURL = NSURL(string: "http://ivsmedia.iptv-distribution.net/Json")!
     private let serviceSuffix = ".svc/json/"
     private var sessionID: String? = nil
     
     //TODO: load from user settings ( possible values from getMediaZoneInfo() call )
     private var streamTimeZone = "EU_RST"
     private var watchingZone = "NA_PST"
+    
     
     // MARK: Login
     func login(username: String, password: String, completion: APIResponseBlock)
@@ -176,6 +178,22 @@ class BRTVAPI: NSObject {
         handlePOSTRequest(request, jsonObject: data ,completion: completion)
     }
     
+    //Seedup image loding in case if template is loaded from service
+    func loadImage(itemID: Int, mediaType : BRTVAPIImageType, index: Int, imageView: UIImageView){
+        guard imageURLTemplate != nil else {
+            getImageURIs(itemID, mediaType : mediaType, index: index,  completion: {(response: AnyObject?, error: NSError?) in
+                let imageURL = NSURL(string: response as! String)!
+                imageView.load(imageURL)
+            })
+            return
+        }
+        var templateURL = self.imageURLTemplate
+        templateURL = templateURL?.stringByReplacingOccurrencesOfString("{0}", withString: "\(itemID)")
+        templateURL = templateURL?.stringByReplacingOccurrencesOfString("{1}", withString: "\(mediaType.rawValue)")
+        templateURL = templateURL?.stringByReplacingOccurrencesOfString("{2}", withString: "\(index)")
+        let imageURL = NSURL(string: templateURL!)!
+        imageView.load(imageURL)
+    }
     
     func getImageURIs(itemID: Int, mediaType : BRTVAPIImageType, index: Int,  completion: APIResponseBlock)
     {
@@ -186,7 +204,8 @@ class BRTVAPI: NSObject {
         
         handlePOSTRequest(request, jsonObject: data ,completion: {
             (response: AnyObject?, error: NSError?) in
-            var templateURL = response as? String
+            self.imageURLTemplate = response as? String
+            var templateURL = self.imageURLTemplate
             if templateURL != nil {
             //        http://hostname/ui/ImageHandler.ashx?e={0}&t={1}&n={2}
             //        {0} - content item id (channel id, movie id, program id)
