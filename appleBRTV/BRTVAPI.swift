@@ -15,8 +15,22 @@ enum BRTVAPIService : String
 
 enum BRTVAPIMethod : String
 {
-    case Login = "Login", GetClientChannels = "GetClientChannels", GetClientStreamUri = "GetClientStreamUri"
+    case Login = "Login", GetClientChannels = "GetClientChannels", GetClientStreamUri = "GetClientStreamUri", GetTVGrid = "GetTVGrid", GetImageUrl = "MediaImageUrlTemplate", GetMediaImageTypes = "GetMediaImageTypes", GetMediaZoneInfo = "GetMediaZoneInfo"
 }
+
+enum BRTVAPIImageType : Int{
+    case VODMain = 1, VODTumbnail = 3,
+    
+    ChanelLogoTransparent = 4, ChanelLogoWhite = 6, ChanelLogoEPGV1 = 7, ChanelLogoNameEPGV1 = 8,ChanelLogoEPGV2 = 9, ChanelLogoOriginal = 10,
+    
+    TVProgram = 11, TVProgramMovie = 12, TVProgramPersonnel = 13, TVProgramEPG = 28,
+    
+    DefaultImage = 14,
+    
+    ArchiveStandartThumbnails = 16, ArchiveStbSmallThumbnails = 18,
+    
+    MovieStbCombined = 19
+  }
 
 public typealias APIResponseBlock = ((response: AnyObject?, error: NSError?) -> ())
 
@@ -28,6 +42,9 @@ class BRTVAPI: NSObject {
     private let serviceSuffix = ".svc/json/"
     private var sessionID: String? = nil
     
+    //TODO: load from user settings ( possible values from getMediaZoneInfo() call )
+    private var streamTimeZone = "EU_RST"
+    private var watchingZone = "NA_PST"
     
     // MARK: Login
     func login(username: String, password: String, completion: APIResponseBlock)
@@ -80,6 +97,49 @@ class BRTVAPI: NSObject {
         handlePOSTRequest(request, jsonObject: dataDict, completion: completion)
     }
     
+    func getClientTVGrid(start: NSDate, end: NSDate, page:Int,  completion: APIResponseBlock)
+    {
+        let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetTVGrid))
+        
+        if sessionID == nil
+        {
+            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            return;
+        }
+        
+        let s1  = Int64(start.timeIntervalSince1970 * 1000)
+        let e1  = Int64(end.timeIntervalSince1970 * 1000)
+        
+        let dataDict = ["sessionID" : sessionID!, "request":[
+            "paging":["itemsOnPage": 7,"pageNumber": page ],
+            "fromTime": "/Date(\(s1))/",
+            "tillTime": "/Date(\(e1))/",
+            "streamZone": streamTimeZone,
+            "watchingZone": streamTimeZone,
+            "showDetails": true,
+            "utcTime": true
+            ]
+        ]
+        
+        handlePOSTRequest(request, jsonObject: dataDict, completion: completion)
+    }
+
+    // MARK: Archive
+    func getClientArchiveChannels(completion: APIResponseBlock)
+    {
+        let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetClientChannels))
+        
+        if sessionID == nil
+        {
+            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            return;
+        }
+        
+        let dataDict = ["sessionID" : sessionID!, "request":["type":8]]
+        
+        handlePOSTRequest(request, jsonObject: dataDict, completion: completion)
+    }
+
     
     // MARK: Stream URI
     func getStreamURI(itemID: Int, completion: APIResponseBlock)
@@ -99,24 +159,85 @@ class BRTVAPI: NSObject {
                 "balancingArea" : ["id" : 4],
                 "cdn" : ["id" : 1],
                 "qualityPreset" : 1,
-                "shiftTimeZoneName" : "NA_EST"
+                "shiftTimeZoneName" : streamTimeZone
             ]
             ]]
         
         handlePOSTRequest(request, jsonObject: data, completion: completion)
     }
     
-    // MARK: Helpers
+    // MARK: Media image URI
+    func getMediaImageType(completion: APIResponseBlock)
+    {
+        let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetMediaImageTypes))
+        
+        let data = []
+        
+        handlePOSTRequest(request, jsonObject: data ,completion: completion)
+    }
     
-    private func handlePOSTRequest(request: NSMutableURLRequest, jsonObject: AnyObject, completion: APIResponseBlock)
+    
+    func getImageURIs(itemID: Int, mediaType : BRTVAPIImageType, index: Int,  completion: APIResponseBlock)
+    {
+        let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetImageUrl))
+
+        let data = ["siteID" : 1]
+        let callback = completion
+        
+        handlePOSTRequest(request, jsonObject: data ,completion: {
+            (response: AnyObject?, error: NSError?) in
+            var templateURL = response as? String
+            if templateURL != nil {
+            //        http://hostname/ui/ImageHandler.ashx?e={0}&t={1}&n={2}
+            //        {0} - content item id (channel id, movie id, program id)
+            //        {1} - type id (use GetMediaImageTypes to get all possible image types)
+            //        {2} - order number of an image for specified content item id and type. if omitted is always = 1
+                templateURL = templateURL?.stringByReplacingOccurrencesOfString("{0}", withString: "\(itemID)")
+                templateURL = templateURL?.stringByReplacingOccurrencesOfString("{1}", withString: "\(mediaType.rawValue)")
+                templateURL = templateURL?.stringByReplacingOccurrencesOfString("{2}", withString: "\(index)")
+                callback(response: templateURL, error: nil)
+            }            
+        })
+    }
+
+    func getMediaZoneInfo(completion: APIResponseBlock)
+    {
+        let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetMediaZoneInfo))
+        
+        let data = []
+        
+        handlePOSTRequest(request, jsonObject: data ,completion: completion)
+    }
+    
+    // MARK: Helpers
+    private func handlePOSTRequestSync(request: NSMutableURLRequest, jsonObject: AnyObject? ) -> AnyObject?
+    {
+        let semaphore = dispatch_semaphore_create(0)
+        var requestResponse : AnyObject? = nil
+        
+        handlePOSTRequest(request, jsonObject: jsonObject ,completion: {
+            (response: AnyObject?, error: NSError?) in
+            requestResponse = response
+            dispatch_semaphore_signal(semaphore)
+        })
+
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        
+        return requestResponse
+    }
+    
+
+    private func handlePOSTRequest(request: NSMutableURLRequest, jsonObject: AnyObject?, completion: APIResponseBlock)
     {
         request.HTTPMethod = "POST"
         
         do {
             
-            let dataStr = try NSJSONSerialization.dataWithJSONObject(jsonObject, options: [])
+            if jsonObject != nil {
+                let dataStr = try NSJSONSerialization.dataWithJSONObject(jsonObject!, options: [])
             
-            request.HTTPBody = dataStr
+                request.HTTPBody = dataStr
+            }
             
             let dataTask = getSession().dataTaskWithRequest(request, completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) in
                 
