@@ -403,8 +403,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" misplaced="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="RightDetail" textLabel="gMe-qq-MWM" detailTextLabel="Zvg-cJ-9ci" style="IBUITableViewCellStyleValue1" id="CBj-t6-zLb">
-                                <rect key="frame" x="0.0" y="194" width="1920" height="66"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RightDetail" textLabel="gMe-qq-MWM" detailTextLabel="Zvg-cJ-9ci" style="IBUITableViewCellStyleValue1" id="CBj-t6-zLb">
+                                <rect key="frame" x="0.0" y="54" width="1880" height="66"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="CBj-t6-zLb" id="G3Y-Tg-lB5">
                                     <rect key="frame" x="0.0" y="0.0" width="1904" height="66"/>

@@ -38,6 +38,10 @@ extension UIImageView {
     }
 
     // MARK: - public
+    public func loadImage(URL: URLLiteralConvertible ){
+        load(URL, placeholder:nil, completionHandler:nil)
+    }
+    
     public func load(URL: URLLiteralConvertible, placeholder: UIImage? = nil, completionHandler:CompletionHandler? = nil) {
         cancelLoading()
 

@@ -17,32 +17,32 @@ class LiveProgramDetailsViewController: UIViewController {
     
     
     var imageType = 1
-    var programData: TVGridProgram? = nil
+    var program: TVGridProgram? = nil
     
     override func viewDidLoad() {
         self.preferredContentSize = CGSizeMake(self.view.frame.size.width, 520)
-        if programData != nil {
-            programName?.text = programData![.name] as? String
-            programDescription?.text = programData![.description] as? String
-            BRTVAPI.sharedInstance.getImageURIs(programData![.channelID] as! Int, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, completion: {(response: AnyObject?, error: NSError?) in
+        if program != nil {
+            programName?.text = program!.name
+            programDescription?.text = program!.description
+            BRTVAPI.sharedInstance.getImageURIs(program!.channelID, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, completion: {(response: AnyObject?, error: ErrorType?) in
                 let imageURL = NSURL(string: response as! String)!
-                self.channelImage!.load(imageURL)
+                self.channelImage!.loadImage(imageURL)
             })
             
-            if (programData![.imageCount] as? Int) >= 1 {
-                BRTVAPI.sharedInstance.getImageURIs(programData![.id] as! Int, mediaType: BRTVAPIImageType.TVProgramEPG, index: 1, completion: {(response: AnyObject?, error: NSError?) in
+            if program!.imageCount >= 1 {
+                BRTVAPI.sharedInstance.getImageURIs(program!.id, mediaType: BRTVAPIImageType.TVProgramEPG, index: 1, completion: {(response: AnyObject?, error: ErrorType?) in
                     let imageURL = NSURL(string: response as! String)!
-                    self.programImage!.load(imageURL)
+                    self.programImage!.loadImage(imageURL)
                 })
             }
             else{
-                BRTVAPI.sharedInstance.getImageURIs(programData![.id] as! Int, mediaType: BRTVAPIImageType.DefaultImage, index: 1, completion: {(response: AnyObject?, error: NSError?) in
+                BRTVAPI.sharedInstance.getImageURIs(program!.id, mediaType: BRTVAPIImageType.DefaultImage, index: 1, completion: {(response: AnyObject?, error: ErrorType?) in
                     let imageURL = NSURL(string: response as! String)!
-                    self.programImage!.load(imageURL)
+                    self.programImage!.loadImage(imageURL)
                 })
             }
             self.programImage?.image = nil
-            programTime.text = "\(programData!.startTime().toShortTimeString()) : \(programData!.endTime().toShortTimeString())"
+            programTime.text = "\(program!.startTime.toShortTimeString()) : \(program!.endTime.toShortTimeString())"
             
         }
     }
@@ -50,7 +50,7 @@ class LiveProgramDetailsViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         switch  segue.identifier! {
         case "LiveChanelPlay":
-            let itemID = programData![.channelID] as? Int
+            let itemID = program!.channelID
             let dest = segue.destinationViewController as! VideoPlayer
             dest.itemID = itemID
         default:

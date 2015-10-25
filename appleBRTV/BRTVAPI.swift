@@ -32,7 +32,7 @@ enum BRTVAPIImageType : Int{
     MovieStbCombined = 19
   }
 
-public typealias APIResponseBlock = ((response: AnyObject?, error: NSError?) -> ())
+
 
 class BRTVAPI: NSObject {
 
@@ -58,28 +58,15 @@ class BRTVAPI: NSObject {
         let data = ["cc": ["appSettings" : ["appName" : applicationName, "siteID" : 0, "settings" : []],
             "clientCredentials": ["UserLogin": username, "UserPassword" : password]]]
        
-        handlePOSTRequest(request, jsonObject: data, completion: { (response: AnyObject?, error: NSError?) in
-            if response is NSDictionary
-            {
-                if let credentials = response!["clientCredentials"] as? NSDictionary
-                {
-                    if let sessionID = credentials["sessionID"] as? String
-                    {
-                        if sessionID.characters.count > 0
-                        {
-                            // successful login
-                            self.sessionID = sessionID
-                            completion(response: response, error: error)
-                            return;
-                        }
-                    }
-                }
+        performRequest(request, jsonObject: data, result:ClientAppSettings.self, completion:{
+            (response: AnyObject?, error: ErrorType?) in
+            guard error == nil else {
+                return completion(response: nil, error: error)
             }
-            
-            completion(response: response, error: NSError(domain: "Login error domain", code: 400, userInfo: nil))
-            
+            let settings = response as? ClientAppSettings
+            self.sessionID = settings!.sessionID
+            completion(response: response, error: error)
         })
-        
     }
     
     
@@ -94,9 +81,9 @@ class BRTVAPI: NSObject {
             return;
         }
         
-        let dataDict = ["sessionID" : sessionID!, "request":["type":4]]
+        let data = ["sessionID" : sessionID!, "request":["type":4]]
         
-        handlePOSTRequest(request, jsonObject: dataDict, completion: completion)
+        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
     }
     
     func getClientTVGrid(start: NSDate, end: NSDate, page:Int,  completion: APIResponseBlock)
@@ -112,7 +99,7 @@ class BRTVAPI: NSObject {
         let s1  = Int64(start.timeIntervalSince1970 * 1000)
         let e1  = Int64(end.timeIntervalSince1970 * 1000)
         
-        let dataDict = ["sessionID" : sessionID!, "request":[
+        let data = ["sessionID" : sessionID!, "request":[
             "paging":["itemsOnPage": 7,"pageNumber": page ],
             "fromTime": "/Date(\(s1))/",
             "tillTime": "/Date(\(e1))/",
@@ -123,7 +110,7 @@ class BRTVAPI: NSObject {
             ]
         ]
         
-        handlePOSTRequest(request, jsonObject: dataDict, completion: completion)
+        performRequest(request, jsonObject: data, result:TVGrid.self, completion:completion)
     }
 
     // MARK: Archive
@@ -137,9 +124,9 @@ class BRTVAPI: NSObject {
             return;
         }
         
-        let dataDict = ["sessionID" : sessionID!, "request":["type":8]]
+        let data = ["sessionID" : sessionID!, "request":["type":8]]
         
-        handlePOSTRequest(request, jsonObject: dataDict, completion: completion)
+        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
     }
 
     
@@ -165,7 +152,7 @@ class BRTVAPI: NSObject {
             ]
             ]]
         
-        handlePOSTRequest(request, jsonObject: data, completion: completion)
+        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
     }
     
     // MARK: Media image URI
@@ -175,25 +162,11 @@ class BRTVAPI: NSObject {
         
         let data = []
         
-        handlePOSTRequest(request, jsonObject: data ,completion: completion)
+        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
     }
     
     //Seedup image loding in case if template is loaded from service
-    func loadImage(itemID: Int, mediaType : BRTVAPIImageType, index: Int, imageView: UIImageView){
-        guard imageURLTemplate != nil else {
-            getImageURIs(itemID, mediaType : mediaType, index: index,  completion: {(response: AnyObject?, error: NSError?) in
-                let imageURL = NSURL(string: response as! String)!
-                imageView.load(imageURL)
-            })
-            return
-        }
-        var templateURL = self.imageURLTemplate
-        templateURL = templateURL?.stringByReplacingOccurrencesOfString("{0}", withString: "\(itemID)")
-        templateURL = templateURL?.stringByReplacingOccurrencesOfString("{1}", withString: "\(mediaType.rawValue)")
-        templateURL = templateURL?.stringByReplacingOccurrencesOfString("{2}", withString: "\(index)")
-        let imageURL = NSURL(string: templateURL!)!
-        imageView.load(imageURL)
-    }
+    
     
     func getImageURIs(itemID: Int, mediaType : BRTVAPIImageType, index: Int,  completion: APIResponseBlock)
     {
@@ -202,20 +175,33 @@ class BRTVAPI: NSObject {
         let data = ["siteID" : 1]
         let callback = completion
         
-        handlePOSTRequest(request, jsonObject: data ,completion: {
-            (response: AnyObject?, error: NSError?) in
-            self.imageURLTemplate = response as? String
-            var templateURL = self.imageURLTemplate
-            if templateURL != nil {
+        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:{
+            (response: AnyObject?, error: ErrorType?) in
+            
+            guard let result = response as? BRTVResponseObject else {
+                callback(response: nil, error: error)
+                return
+            }
+            
+            self.imageURLTemplate = result.response as? String
+            guard var templateURL = self.imageURLTemplate else {
+                callback(response: nil, error: nil)
+                return
+            }
+            
+            templateURL = templateURL.stringByReplacingOccurrencesOfString("\\", withString: "")
+            templateURL = templateURL.stringByReplacingOccurrencesOfString("\"", withString: "")
+            self.imageURLTemplate = templateURL
+            
             //        http://hostname/ui/ImageHandler.ashx?e={0}&t={1}&n={2}
             //        {0} - content item id (channel id, movie id, program id)
             //        {1} - type id (use GetMediaImageTypes to get all possible image types)
             //        {2} - order number of an image for specified content item id and type. if omitted is always = 1
-                templateURL = templateURL?.stringByReplacingOccurrencesOfString("{0}", withString: "\(itemID)")
-                templateURL = templateURL?.stringByReplacingOccurrencesOfString("{1}", withString: "\(mediaType.rawValue)")
-                templateURL = templateURL?.stringByReplacingOccurrencesOfString("{2}", withString: "\(index)")
-                callback(response: templateURL, error: nil)
-            }            
+            
+            templateURL = templateURL.stringByReplacingOccurrencesOfString("{0}", withString: "\(itemID)")
+            templateURL = templateURL.stringByReplacingOccurrencesOfString("{1}", withString: "\(mediaType.rawValue)")
+            templateURL = templateURL.stringByReplacingOccurrencesOfString("{2}", withString: "\(index)")
+            callback(response: templateURL, error: nil)
         })
     }
 
@@ -225,86 +211,9 @@ class BRTVAPI: NSObject {
         
         let data = []
         
-        handlePOSTRequest(request, jsonObject: data ,completion: completion)
+        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
     }
     
-    // MARK: Helpers
-    private func handlePOSTRequestSync(request: NSMutableURLRequest, jsonObject: AnyObject? ) -> AnyObject?
-    {
-        let semaphore = dispatch_semaphore_create(0)
-        var requestResponse : AnyObject? = nil
-        
-        handlePOSTRequest(request, jsonObject: jsonObject ,completion: {
-            (response: AnyObject?, error: NSError?) in
-            requestResponse = response
-            dispatch_semaphore_signal(semaphore)
-        })
-
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
-        
-        return requestResponse
-    }
-    
-
-    private func handlePOSTRequest(request: NSMutableURLRequest, jsonObject: AnyObject?, completion: APIResponseBlock)
-    {
-        request.HTTPMethod = "POST"
-        
-        do {
-            
-            if jsonObject != nil {
-                let dataStr = try NSJSONSerialization.dataWithJSONObject(jsonObject!, options: [])
-            
-                request.HTTPBody = dataStr
-            }
-            
-            let dataTask = getSession().dataTaskWithRequest(request, completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) in
-                
-                if error != nil
-                {
-                    completion(response: nil, error: error)
-                    return
-                }
-                
-                if data == nil && response != nil
-                {
-                    completion(response: nil, error: NSError(domain: "Data error domain", code: 400, userInfo: ["url response" : response!]))
-                    return
-                }
-                
-                do
-                {
-                    let jsonData = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)
-                    completion(response: jsonData, error: nil)
-                }
-                catch let error as NSError
-                {
-                    completion(response: nil, error: error)
-                }
-                
-                
-            })
-            
-            dataTask.resume()
-        }
-        catch let error as NSError
-        {
-            completion(response: nil, error: error)
-            print("json error: \(error)")
-            
-        }
-
-    }
-    
-    private func getSession() -> NSURLSession
-    {
-        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
-        
-        sessionConfig.HTTPAdditionalHeaders = ["Content-Type" : "application/json"]
-        
-        let session = NSURLSession(configuration: sessionConfig)
-        return session
-    }
     
     private func getFullRequestURL(service: BRTVAPIService, method: BRTVAPIMethod) -> NSURL
     {

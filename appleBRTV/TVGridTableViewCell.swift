@@ -14,15 +14,18 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     var selectedProgramm :TVGridProgram? = nil
     var currentIndex : Int = 0
     var direction = true
+    var minWidth : CGFloat = 0.0
+    
     @IBOutlet var collectionView : UICollectionView?
     @IBOutlet var channelIcon : UIImageView?
     @IBOutlet var channelId : UILabel?
     @IBOutlet var sequeAnchor : UIButton!
-
+    
     var channelData: TVGridChannel? = nil {
         didSet{
-            channelId?.text = "\(channelData![.accessNum] as! Int)"
-            BRTVAPI.sharedInstance.loadImage(channelData![.id] as! Int, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, imageView: channelIcon!)
+            channelId?.text = "\(channelData!.accessNum)"
+            Functions.loadImage(channelData!.id, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, imageView: channelIcon!)
+            print("channelData:didSet -> (\(channelData!.id)) programs=\(channelData!.count)")
             collectionView?.reloadData()
         }
     }
@@ -33,6 +36,7 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
         if index >= 0 {
             currentIndex = index!
         }
+        minWidth = ((self.collectionView?.frame.width)!/CGFloat(240.0))
     }
     
     override func setSelected(selected: Bool, animated: Bool) {
@@ -45,16 +49,17 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int{
-        let count = channelData?[.programs]?.count
-        return count != nil ? count! : 0
+        return (channelData?.count)!
     }
     
     // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell{
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ProgramItem", forIndexPath: indexPath) as! LiveTVGridViewCell
         cell.programData = channelData![indexPath.row]
-        cell.programData![.channelID] = channelData![.id]
-        cell.programData![.UtcOffset] = channelData![.UtcOffset]
+        let lastIndex = (channelData?.count)! - 1
+        if indexPath.row == lastIndex{
+            self.controller?.requestGrid( (channelData![lastIndex]?.endTime)!)
+        }
         return cell
     }
     
@@ -95,14 +100,17 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         let program = channelData![indexPath.row]
-        var lenght = program![.length] as! CGFloat
-        var width = ((self.collectionView?.frame.width)!/240.0)
+        var lenght = Float(program!.length)
         if currentIndex == indexPath.row {
-            let startTime = program?.startTime()
-            let offset : Double = NSDate().closestTo(30).timeIntervalSinceDate(startTime!)
-            lenght = lenght - CGFloat(offset/60)
+            let startTime = program!.startTime
+            let offset : Float = Float(NSDate().closestTo(30).timeIntervalSinceDate(startTime)/60)
+            if lenght - offset > 0 {
+                lenght = lenght - offset
+            }            
+           // print("sizeForItem -> lenght=\(lenght)")
         }
-        width = width*lenght
+        let width = minWidth*CGFloat(lenght)
+       // print("sizeForItem -> width=\(lenght)")
         return CGSizeMake(width, 120)
     }
     

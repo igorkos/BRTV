@@ -15,7 +15,7 @@ class LiveTVGridViewCell: UICollectionViewCell {
     override func layoutSubviews(){
         super.layoutSubviews()
         if programData != nil {
-            title?.text = programData![.name] as? String
+            title?.text = programData!.name
         }
     }
     

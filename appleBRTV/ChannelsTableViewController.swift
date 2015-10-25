@@ -9,12 +9,10 @@
 import UIKit
 
 
-class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource {
+class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, TVGridDataSourceDelegate {
 
-    var channelsData: TVGrid = TVGrid()
-    var tvGridStartTime: NSDate? = nil
-    var tvGridEndTime: NSDate? = nil
-    var tvGridCurrentTime: NSDate? = nil
+    var tvGrid: TVGridDataSource = TVGridDataSource()
+    
     @IBOutlet var timeGrid : UICollectionView!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var timeLabel: UILabel!
@@ -23,79 +21,45 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        //Reload grid
         
-//        BRTVAPI.sharedInstance.getClientChannels(NSUserDefaults.standardUserDefaults().objectForKey("sessionID"), completion: { (response: AnyObject?, error: NSError?) in
-//            
-//        });
+        tvGrid.delegate = self
+        tvGrid.reloadGrid()
         
-        tvGridStartTime = NSDate().closestTo(30)
-        tvGridCurrentTime = tvGridStartTime
-        tvGridEndTime  = NSDate(timeIntervalSinceNow:3600*24)
-        loadTVGrid(1)
-        
-       
-       timeLabel.text = NSDate().toShortTimeString()
+        timeLabel.text = NSDate().toShortTimeString()
     }
     
-    private func loadTVGrid( page: Int){
-        
-        BRTVAPI.sharedInstance.getClientTVGrid(tvGridStartTime!, end: tvGridEndTime!, page: page, completion: { (response: AnyObject?, error: NSError?) in
-            let paging = self.channelsData.updateGrid((response as? [String:AnyObject])!)
-            if paging.page != paging.totalPages {
-                self.loadTVGrid( paging.page + 1)
-            }
-            dispatch_async(dispatch_get_main_queue(), {
-                self.tableView.reloadData()
-            })
-        })
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
     func offsetTimeTable( offset: CGFloat ){
-      //  tvGridCurrentTime = tvGridStartTime!.dateByAddingTimeInterval(offset*60)
-      //  tvGridCurrentTime = tvGridCurrentTime?.closestTo(30)
         let point = CGPointMake(offset, 0)
         timeGrid.setContentOffset(point, animated: false)
         let cells = tableView.visibleCells as! [TVGridTableViewCell]
         for cell in cells {
-           // dispatch_async(dispatch_get_main_queue()){
-                cell.collectionView?.setContentOffset(point, animated: false)
-            //}
+            cell.collectionView?.setContentOffset(point, animated: false)            
         }
+    }
+    
+    func requestGrid( startTime: NSDate ){
+        tvGrid.updateGrid(startTime)
     }
     // MARK: - Table view data source
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int{
-        return channelsData.count
+        return tvGrid.count
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
-
-//    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String?{
-//        if channelsData.count > section{
-//            let chanel : [String:AnyObject] = channelsData[section]
-//            return chanel["name"] as? String
-//        }
-//        return nil
-//    }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("ChannelScrollCell", forIndexPath: indexPath) as! TVGridTableViewCell
 
-        // Configure the cell...
-        
-        cell.channelData = channelsData[indexPath.section]
+        cell.channelData = tvGrid[indexPath.section]
         cell.controller = self
         return cell
     }
@@ -163,7 +127,7 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
         switch  segue.identifier! {
         case "ShowProgramDetails":
             let dest = segue.destinationViewController as! LiveProgramDetailsViewController
-            dest.programData = (sender as! TVGridTableViewCell).selectedProgramm
+            dest.program = (sender as! TVGridTableViewCell).selectedProgramm
             let popOverPresentationController = segue.destinationViewController.popoverPresentationController
             popOverPresentationController!.sourceRect  = (sender as! TVGridTableViewCell).sequeAnchor.frame
             popOverPresentationController!.sourceView  = (sender as! TVGridTableViewCell)
@@ -183,7 +147,7 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
     // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell{
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("TimeGridItem", forIndexPath: indexPath) as! LiveTVTimeGridViewCell
-        let cellTime  = tvGridCurrentTime!.dateByAddingTimeInterval(Double(indexPath.row*30*60) )
+        let cellTime  = tvGrid.tvGridStartTime.dateByAddingTimeInterval(Double(indexPath.row*30*60) )
         cell.title?.text = cellTime.toShortTimeString()
         return cell
     }
@@ -201,4 +165,33 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
     }
 
 
+    //MARK: - TVGridDataSourceDelegate
+    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
+        guard let visible = self.tableView.indexPathsForVisibleRows else {
+            self.tableView.reloadData()
+            return
+        }
+        
+        guard visible.count > 0 else {
+            self.tableView.reloadData()
+            return
+        }
+        
+        let visCells : NSRange = NSRange(location: visible[0].section, length: visible[visible.count - 1].section - visible[0].section)
+        print("TVGridDataSourceDelegate:didChangeObjects -> visible \(visCells) changed \(didChangeObjects)")
+        let intersec : NSRange = NSIntersectionRange(visCells, didChangeObjects)
+        if intersec.length > 0 {
+            print("TVGridDataSourceDelegate:didChangeObjects -> intersection \(intersec)")
+            
+        }
+    }
+    func controllerWillChangeContent(tvGridDataSource: TVGridDataSource ){
+        
+    }
+    func controllerDidChangeContent(tvGridDataSource: TVGridDataSource ){
+        
+    }
+    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didGetError: ErrorType){
+        
+    }
 }

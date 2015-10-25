@@ -19,7 +19,7 @@ class VideoPlayer: AVPlayerViewController {
         assert(itemID != nil, "Item id is nil")
         print("item id: \(itemID)")
         
-            BRTVAPI.sharedInstance.getStreamURI(itemID!, completion: { (response: AnyObject?, error: NSError?) in
+            BRTVAPI.sharedInstance.getStreamURI(itemID!, completion: { (response: AnyObject?, error: ErrorType?) in
                 
                 let urlStr = response!["URL"] as! String
                 let url = NSURL(string: urlStr)!

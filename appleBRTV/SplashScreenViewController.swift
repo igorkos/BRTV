@@ -27,7 +27,7 @@ class SplashScreenViewController: UIViewController {
                 if cred.user != nil && cred.password != nil
                 {
                     BRTVAPI.sharedInstance.login(cred.user!, password: cred.password!, completion: {
-                        [weak self](response: AnyObject?, error: NSError?) in
+                        [weak self](response: AnyObject?, error: ErrorType?) in
                         
                         dispatch_async(dispatch_get_main_queue(), {
                             if (error != nil)

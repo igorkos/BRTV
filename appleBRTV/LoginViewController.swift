@@ -27,7 +27,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         
         BRTVAPI.sharedInstance.login(usernameTextField.text!, password: passwordTextField.text!, completion: {
-            [weak self](response: AnyObject?, error: NSError?) in
+            [weak self](response: AnyObject?, error: ErrorType?) in
             
             dispatch_async(dispatch_get_main_queue(), {
                 if (error != nil)

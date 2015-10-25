@@ -1,251 +1,135 @@
 //
-//  ChanelProgramsData.swift
+//  TVGridObject.swift
 //  appleBRTV
 //
-//  Created by Igor Kosulin on 10/18/15.
+//  Created by Igor Kosulin on 10/22/15.
 //  Copyright © 2015 Aleksandr Kelbas. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
-class TVGridProgram {
-    enum Keys : String {
-        case advisory,// Program advisory
-        bookmarked, //true when user marked it as favorite. always false when recorded == false
-        description, //TV program's long description
-        id, //Item id of a TV program
-        imageCount, //Number of available images
-        length, //Length of the TV program in seconds
-        name, //TV program display name
-        recorded, //Flag indicating that the program is recorded and available in archives (DVR and ArcPlus).
-        startOffset	, //saved last watched position for DVR items
-        startTime, //TV prgram start time
-        UtcOffset,
-        channelID
+//MARK: operators
+func += (left: TVGrid, right: TVGrid) -> TVGrid {
+    var startIndex = (right.page - 1)*(right.paging?.itemsOnPage)!
+    let endIndex = startIndex + (right.paging?.itemsOnPage)!
+    if (left.chanels?.count)! < endIndex {
+       left.chanels?.appendContentsOf(right.chanels!)
+       left.paging?.pageNumber = right.page
     }
+    else{
+        for channel in right.chanels! {
+            left[startIndex++]! += channel
+        }
+        left.paging?.pageNumber = right.page
+    }
+    return left
+}
 
+class ItemPaging : JSONDecodable{
+    var itemsOnPage : Int //Desired number of items per page
+    var pageNumber  : Int//Requested page number.
+    var totalItems : Int//Total number of items
+    var totalPages : Int//Total number of pages
     
-    var program : [String:AnyObject]? = nil
-  
-    init( withData data: [String:AnyObject]? ){
-        program = data
+    
+    //MARK: JSON parsing
+    required init( itemsOnPage : Int, pageNumber  : Int,totalItems : Int,totalPages : Int){
+        self.itemsOnPage = itemsOnPage
+        self.pageNumber = pageNumber
+        self.totalItems = totalItems
+        self.totalPages = totalPages
     }
     
-    subscript(key: Keys) -> AnyObject?{
-        get
-        {
-            return program?[key.rawValue]
+    static func create(itemsOnPage : Int)(pageNumber  : Int)(totalItems : Int)(totalPages : Int) -> ItemPaging {
+        return ItemPaging(itemsOnPage: itemsOnPage, pageNumber: pageNumber,totalItems: totalItems,totalPages: totalPages)
+    }
+    
+    static func decode(json: JSON) -> ItemPaging? {
+        return _JSONObject(json) >>> { d in
+            ItemPaging.create <^>
+                _JSONInt(d["itemsOnPage"]) <*>
+                _JSONInt(d["pageNumber"]) <*>
+                _JSONInt(d["totalItems"]) <*>
+                _JSONInt(d["totalPages"])
         }
-        set(value)
-        {
-            program?[key.rawValue] = value
-        }
-    }
-    
-    func startTime() -> NSDate {
-        var start = NSDate(value:self[.startTime] as! String)
-        //start = NSDate(timeInterval: (self[.UtcOffset] as! Double)*60, sinceDate: start)
-        return start
-    }
-    
-    func endTime() -> NSDate {
-        let start = startTime()
-        let end = NSDate(timeInterval: (self[.length] as! Double)*60, sinceDate: start)
-        return end
+
     }
 }
 
-class TVGridChannel {
+
+class TVGrid : JSONDecodable{
     
-    enum Keys : String {
-        case accessNum, //Channel access number displayed in the box beside the channel. Dial the number on a remote to switch to the channel
-        advisory, //Content advisory raiting of the channel
-        arX, //X-axis aspect
-        arY, //Y-axis aspect
-        id, // Item id of a TV channel
-        name, //TV channel display name
-        orderNum, //Current channel position for displaying the channel in the channel list
-        programs, //List of TV programs
-        UtcOffset
+    //MARK: JSON parsing
+    var chanels : Array<TVGridChannel>?
+    var paging :  ItemPaging?
+    
+    required init(paging :  ItemPaging?,chanels : Array<TVGridChannel>?){
+        self.chanels = chanels
+        self.paging = paging
     }
     
-    var channel : [String:AnyObject]? {
-        didSet {
-            _programs = self[.programs] as? [[String:AnyObject]]
-        }
-    }
-    private var _programs : [[String:AnyObject]]? = nil
-    
-    subscript(key: Keys) -> AnyObject?{
-        get
-        {
-            return channel?[key.rawValue]
-        }
-        set(value)
-        {
-            channel?[key.rawValue] = value
-        }
+    static func create(paging :  ItemPaging?)(chanels : Array<TVGridChannel>?) -> TVGrid {
+        return TVGrid(paging:paging,chanels:chanels)
     }
     
-    subscript(index: Int) -> TVGridProgram?
-        {
-        get
-        {            
-            guard _programs?.count > index else {
-                assert(false, "Index out of range")
-                return nil
+    static func decode(json: JSON) -> TVGrid? {
+        return _JSONObject(json) >>> { d in
+            TVGrid.create <^>
+                ItemPaging.decode(_JSONObject(d["paging"])) <*>
+                _JSONArray(d["grid"]) >>> { c in
+                    var array = Array<TVGridChannel>()
+                    for channelData in c {
+                        let channel = TVGridChannel.decode(channelData)
+                        array.append(channel!)
+                    }
+                    return array
+                }
+        }
+    }
+    
+    //MARK: properties
+    var count : Int {
+        get{
+            guard let ch = chanels else{
+                return 0
             }
-            return TVGridProgram(withData: _programs![index])
-        }
-        set(program)
-        {
-            _programs![index] = (program?.program)!
-            
+            return ch.count
         }
     }
     
-    init(withData data:[String:AnyObject]?) {
-        self.channel = data
-        _programs = self[.programs] as? [[String:AnyObject]]
-    }
-    
-    func programLive( atTime: NSDate ) -> TVGridProgram{
-        let result = _programs?.filter({
-            let prog = TVGridProgram(withData:$0)
-            prog[.UtcOffset] = self[.UtcOffset]
-            //Calculate start time
-            let start = prog.startTime()
-            let end = prog.endTime()
-            
-            if atTime.compare(start) == .OrderedAscending {
-                return false
+    var page : Int {
+        get{
+            guard paging != nil else {
+                return 0
             }
-            if atTime.compare(end) == .OrderedDescending {
-                return false
+            return paging!.pageNumber
+        }
+    }
+    
+    var totalPages : Int {
+        get{
+            guard paging != nil else {
+                return 0
             }
-            return true
-        })
-        guard result?.count > 0 else {
-            return TVGridProgram(withData:nil)
-        }
-        return TVGridProgram(withData: result?[0])
-    }
-    
-    func indexOfLiveProgram() -> Int {
-        let liveProgram = programLive( NSDate() )
-        let index = indexOfProgram(liveProgram)
-        print(index)
-        return index
-    }
-    
-    func indexOfProgram( program: TVGridProgram ) -> Int {
-        
-        let index = _programs?.indexOf({
-            $0[TVGridProgram.Keys.startTime.rawValue] as! String ==  program[.startTime] as? String
-        })
-        guard index != nil else {
-            return -1
-        }
-        print(index)
-        return index!
-    }
-}
-
-class ItemPaging{
-    private var paging : [String:AnyObject]? = nil
-
-    enum Keys : String {
-        case itemsOnPage, //Desired number of items per page
-        pageNumber,//Requested page number.
-        totalItems,//Total number of items
-        totalPages//Total number of pages    
-    }
-    
-    init( withData data: [String:AnyObject]){
-        paging = data
-    }
-    
-    subscript(key: Keys) -> AnyObject?{
-        get
-        {
-            return paging?[key.rawValue]
-        }
-        set(value)
-        {
-            paging?[key.rawValue] = value
-        }
-    }
-}
-
-class TVGrid {
-    
-    enum Keys : String {
-        case grid, //List of objects representing TV Channels.
-        paging //Output parameter with paging information for current request for TV Guide
-    }
-
-    
-    var grid : [String:AnyObject]? = nil
-    var channels : [[String:AnyObject]]? = nil
-    var paging : ItemPaging? = nil
-    
-    subscript(key: Keys) -> AnyObject?{
-        get
-        {
-            return grid?[key.rawValue]
-        }
-        set(value)
-        {
-            grid?[key.rawValue] = value
+            return paging!.totalPages
         }
     }
     
+    //MARK: Subscripts
     subscript(index: Int) -> TVGridChannel?
         {
         get
         {
-            guard channels!.count > index  else {
+            guard var ch = chanels else{
+                assert(false, "Not inicialized")
+                return nil
+            }
+            guard ch.count > index  else {
                 assert(false, "Index out of range")
                 return nil
             }
-            let channel = TVGridChannel(withData: channels![index])
-            return channel
-        }
-    }
-
-    var count : Int {
-        get{
-            guard channels != nil else {
-                return 0
-            }
-            return channels!.count
+            return ch[index]
         }
     }
     
-    func updateGrid(gridData:[String:AnyObject]) -> (page : Int, totalPages : Int){
-        guard grid != nil else {
-            grid = gridData
-            channels = self[.grid] as? [[String:AnyObject]]
-            paging = ItemPaging(withData: self[.paging] as! [String:AnyObject])
-            return ( (paging![.pageNumber] as! Int), paging![.totalPages] as! Int)
-        }
-        
-        paging = ItemPaging(withData: gridData[Keys.paging.rawValue] as! [String:AnyObject])
-        let page = (paging![.pageNumber] as! Int) - 1
-        let itemsOnPage = paging![.itemsOnPage] as! Int
-        var itemStartIndex = page*itemsOnPage
-        let newChannels = gridData[Keys.grid.rawValue] as! [[String:AnyObject]]
-        for chanel in newChannels {
-            channels?.insert(chanel, atIndex: itemStartIndex++ )
-        }
-        return ( (paging![.pageNumber] as! Int), paging![.totalPages] as! Int)
-    }
-    
-}
-
-class TVGridDataSource {
-    static let sharedInstance = TVGridDataSource()
-    
-    
-
 }
