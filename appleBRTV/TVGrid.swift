@@ -11,7 +11,7 @@ import Foundation
 //MARK: operators
 func += (left: TVGrid, right: TVGrid) -> TVGrid {
     var startIndex = (right.page - 1)*(right.paging?.itemsOnPage)!
-    let endIndex = startIndex + (right.paging?.itemsOnPage)!
+    let endIndex = startIndex + right.count
     if (left.chanels?.count)! < endIndex {
        left.chanels?.appendContentsOf(right.chanels!)
        left.paging?.pageNumber = right.page

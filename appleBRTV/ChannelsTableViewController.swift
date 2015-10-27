@@ -12,7 +12,7 @@ import UIKit
 class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, TVGridDataSourceDelegate {
 
     var tvGrid: TVGridDataSource = TVGridDataSource()
-    
+    var timeCells = 0
     @IBOutlet var timeGrid : UICollectionView!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var timeLabel: UILabel!
@@ -20,13 +20,12 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         //Reload grid
-        
         tvGrid.delegate = self
         tvGrid.reloadGrid()
-        
         timeLabel.text = NSDate().toShortTimeString()
+        timeCells = 10000
+        timeGrid.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
@@ -46,6 +45,19 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
     func requestGrid( startTime: NSDate ){
         tvGrid.updateGrid(startTime)
     }
+    
+    func timeGridOffset() -> NSDate{
+        let cells = timeGrid.indexPathsForVisibleItems()
+        let result = cells.sort({
+            if $0.row < $1.row  {
+                return true
+            }
+            return false
+        })
+        print("timeGridOffset -> \(result)")
+        return tvGrid.tvGridStartTime.dateByAddingTimeInterval(Double(result[0].row*30*60) )
+    }
+    
     // MARK: - Table view data source
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int{
@@ -82,41 +94,6 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
         }
 
     }
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
     
     // MARK: - Navigation
 
@@ -135,20 +112,20 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
             
         }
     }
+    // MARK: - Time Grid
     // MARK: UICollectionViewDataSource
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int{
         return 1
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int{
-        return 100
+        return timeCells
     }
     
-    // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell{
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("TimeGridItem", forIndexPath: indexPath) as! LiveTVTimeGridViewCell
         let cellTime  = tvGrid.tvGridStartTime.dateByAddingTimeInterval(Double(indexPath.row*30*60) )
-        cell.title?.text = cellTime.toShortTimeString()
+        cell.title?.text = cellTime.toShortTimeString()        
         return cell
     }
     
@@ -157,39 +134,39 @@ class ChannelsTableViewController: UIViewController, UITableViewDelegate, UITabl
         return NSIndexPath(forItem: 0, inSection: 0)
     }
     
-    // MARK: - UICollectionViewFlowLayout
+    // MARK: UICollectionViewFlowLayout
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize{
-        let width = ((self.timeGrid?.frame.width)! - 7) / 8
+        let width = CGFloat(7*30) - 2//((self.timeGrid?.frame.width)! - 7) / 8
         return CGSizeMake(width, 50)
     }
 
 
     //MARK: - TVGridDataSourceDelegate
     func tvGridDataSource(tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
+        let indexPaths =  NSIndexSet(indexesInRange: NSRange(location:didChangeObjects.location,length:didChangeObjects.length))
         guard let visible = self.tableView.indexPathsForVisibleRows else {
-            self.tableView.reloadData()
+            self.tableView.insertSections(indexPaths, withRowAnimation: .Automatic)
             return
         }
         
         guard visible.count > 0 else {
-            self.tableView.reloadData()
+            self.tableView.insertSections(indexPaths, withRowAnimation: .Automatic)
             return
         }
         
-        let visCells : NSRange = NSRange(location: visible[0].section, length: visible[visible.count - 1].section - visible[0].section)
-        print("TVGridDataSourceDelegate:didChangeObjects -> visible \(visCells) changed \(didChangeObjects)")
-        let intersec : NSRange = NSIntersectionRange(visCells, didChangeObjects)
-        if intersec.length > 0 {
-            print("TVGridDataSourceDelegate:didChangeObjects -> intersection \(intersec)")
-            
+        if self.tableView.numberOfSections < (didChangeObjects.location + didChangeObjects.length){
+            self.tableView.insertSections(indexPaths, withRowAnimation: .Automatic)
+        }
+        else{
+            self.tableView.reloadSections(indexPaths, withRowAnimation: .Automatic)
         }
     }
     func controllerWillChangeContent(tvGridDataSource: TVGridDataSource ){
-        
+        self.tableView.beginUpdates()
     }
     func controllerDidChangeContent(tvGridDataSource: TVGridDataSource ){
-        
+        self.tableView.endUpdates()
     }
     func tvGridDataSource(tvGridDataSource: TVGridDataSource, didGetError: ErrorType){
         

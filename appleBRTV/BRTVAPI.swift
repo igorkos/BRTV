@@ -151,8 +151,15 @@ class BRTVAPI: NSObject {
                 "shiftTimeZoneName" : streamTimeZone
             ]
             ]]
-        
-        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
+        let callback = completion
+        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:{
+            (response: AnyObject?, error: ErrorType?) in
+            guard let result = response as? BRTVResponseObject else {
+                callback(response: nil, error: error)
+                return
+            }
+            callback(response: result.response, error: nil)
+        })
     }
     
     // MARK: Media image URI

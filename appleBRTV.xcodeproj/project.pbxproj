@@ -210,8 +210,6 @@
 		5F7382031BC890BD005CFE63 /* appleBRTV */ = {
 			isa = PBXGroup;
 			children = (
-				5F21D6581BCBF8A100059CAD /* Fonts */,
-				5F7382041BC890BE005CFE63 /* AppDelegate.swift */,
 				5FFB23611BCB9DE1008EE818 /* Classes */,
 			);
 			path = appleBRTV;
@@ -249,6 +247,7 @@
 				5F87A8C31BCC772C00BD0D41 /* Functions.swift */,
 				5F823EF01BCD954D00CDDA07 /* SettingsTableViewController.swift */,
 				FABC549D1BD21FA400855798 /* NSDate+Compomets.swift */,
+				5F7382041BC890BE005CFE63 /* AppDelegate.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -296,6 +295,7 @@
 		FA9E9AF21BD80AE2007B561C /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				5F21D6581BCBF8A100059CAD /* Fonts */,
 				5F73820B1BC890BE005CFE63 /* Main.storyboard */,
 				5F73820E1BC890BE005CFE63 /* Assets.xcassets */,
 				5F7382101BC890BE005CFE63 /* Info.plist */,

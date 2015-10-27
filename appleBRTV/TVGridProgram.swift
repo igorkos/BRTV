@@ -21,7 +21,7 @@ class TVGridProgram : JSONDecodable{
     var startOffset : Int //saved last watched position for DVR items
     var startTime : NSDate //TV prgram start time
 
-    var endTime : NSDate //TV prgram start time
+    var endTime : NSDate //TV prgram end time
     var UtcOffset : Int
     var channelID : Int
     
@@ -37,9 +37,10 @@ class TVGridProgram : JSONDecodable{
         self.name = name
         self.recorded = recorded
         self.startOffset = startOffset
-        self.startTime = NSDate(value:startTime)
-        self.endTime = NSDate(timeInterval: Double(self.length*60), sinceDate: self.startTime)
         self.UtcOffset = UtcOffset
+        self.startTime = NSDate(value:startTime)
+        self.startTime = NSDate(timeInterval: Double(UtcOffset*(-60)), sinceDate: self.startTime )
+        self.endTime = NSDate(timeInterval: Double(self.length*60), sinceDate: self.startTime)
         self.channelID = channelID
     }
     
@@ -63,5 +64,10 @@ class TVGridProgram : JSONDecodable{
                 _JSONInt(d["UtcOffset"]) <*>
                 _JSONInt(d["channelID"])
         }
+    }
+    
+    func formatedShowTime() -> String {
+        let time = "\(startTime.toShortTimeString()) : \(endTime.toShortTimeString())"
+        return time
     }
 }

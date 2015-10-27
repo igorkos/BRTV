@@ -8,12 +8,12 @@
 
 import UIKit
 
-class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout,TVGridChannelDelegte {
 
     weak var controller : ChannelsTableViewController? = nil
     var selectedProgramm :TVGridProgram? = nil
     var currentIndex : Int = 0
-    var direction = true
+    
     var minWidth : CGFloat = 0.0
     
     @IBOutlet var collectionView : UICollectionView?
@@ -21,22 +21,36 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     @IBOutlet var channelId : UILabel?
     @IBOutlet var sequeAnchor : UIButton!
     
+    
     var channelData: TVGridChannel? = nil {
         didSet{
-            channelId?.text = "\(channelData!.accessNum)"
-            Functions.loadImage(channelData!.id, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, imageView: channelIcon!)
             print("channelData:didSet -> (\(channelData!.id)) programs=\(channelData!.count)")
+            channelData?.delegate = self
             collectionView?.reloadData()
         }
     }
     
+    override func prepareForReuse(){
+        if channelData != nil {
+            channelData?.delegate = nil
+        }
+        super.prepareForReuse()
+    }
+    
     override func layoutSubviews(){
         super.layoutSubviews()
-        let index = channelData?.indexOfLiveProgram()
-        if index >= 0 {
-            currentIndex = index!
+        let offset = controller!.timeGridOffset()
+        print("TVGridTableViewCell -> search index for time \(offset.toTimeString())")
+        let pr = channelData?.programLive(offset)
+        currentIndex = 0
+        if pr != nil {
+            currentIndex = (channelData?.indexOfProgram(pr!))!
         }
-        minWidth = ((self.collectionView?.frame.width)!/CGFloat(240.0))
+        collectionView!.remembersLastFocusedIndexPath = true
+        minWidth = 7.0//((self.collectionView?.frame.width)!/CGFloat(240.0))
+        channelId?.text = "\(channelData!.accessNum)"
+        Functions.loadImage(channelData!.id, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, imageView: channelIcon!)
+
     }
     
     override func setSelected(selected: Bool, animated: Bool) {
@@ -93,7 +107,7 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     }
     
     func indexPathForPreferredFocusedViewInCollectionView(collectionView: UICollectionView) -> NSIndexPath?{
-        return NSIndexPath(forItem: 4, inSection: 0)
+        return NSIndexPath(forItem: currentIndex, inSection: 0)
     }
 
     // MARK: - UICollectionViewFlowLayout
@@ -101,15 +115,14 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         let program = channelData![indexPath.row]
         var lenght = Float(program!.length)
-        if currentIndex == indexPath.row {
+        if indexPath.row == 0 {
             let startTime = program!.startTime
             let offset : Float = Float(NSDate().closestTo(30).timeIntervalSinceDate(startTime)/60)
             if lenght - offset > 0 {
                 lenght = lenght - offset
-            }            
-           // print("sizeForItem -> lenght=\(lenght)")
+            }
         }
-        let width = minWidth*CGFloat(lenght)
+        let width = minWidth*CGFloat(lenght) - 2
        // print("sizeForItem -> width=\(lenght)")
         return CGSizeMake(width, 120)
     }
@@ -121,4 +134,15 @@ class TVGridTableViewCell: UITableViewCell, UICollectionViewDelegate, UICollecti
         controller?.offsetTimeTable(offset)
     }
     
+    // MARK: - TVGridChannelDelegte
+    func tvGridChannel(tvGridChannel: TVGridChannel, didAddObjects: NSRange){
+        var paths : [NSIndexPath] = []
+        for var i = 0 ; i < didAddObjects.length ;i++ {
+            paths.append(NSIndexPath(forItem: didAddObjects.location + i, inSection: 0))
+        }
+        collectionView?.performBatchUpdates( {self.collectionView?.insertItemsAtIndexPaths(paths)}, completion: nil)
+    }
+    func tvGridChannel(tvGridChannel: TVGridChannel, didRemoveObjects: NSRange){
+        
+    }
 }

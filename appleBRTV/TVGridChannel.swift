@@ -13,6 +13,10 @@ func += (left: TVGridChannel, right: TVGridChannel) -> TVGridChannel {
     return left
 }
 
+protocol TVGridChannelDelegte : NSObjectProtocol{
+    func tvGridChannel(tvGridChannel: TVGridChannel, didAddObjects: NSRange)
+    func tvGridChannel(tvGridChannel: TVGridChannel, didRemoveObjects: NSRange)
+}
 
 class TVGridChannel : JSONDecodable{
     
@@ -26,7 +30,7 @@ class TVGridChannel : JSONDecodable{
     var orderNum  : Int //Current channel position for displaying the channel in the channel list
     var programs : Array<TVGridProgram>? //List of TV programs
     var UtcOffset : Int
-    
+    weak var delegate : TVGridChannelDelegte?
   
     required init( accessNum : Int, advisory  : Int, arX  : Int, arY : Int, id  : Int, name : String?, orderNum  : Int,UtcOffset : Int, programs:Array<TVGridProgram>?){
         self.accessNum = accessNum
@@ -59,11 +63,15 @@ class TVGridChannel : JSONDecodable{
                     let utc = _JSONInt(d["UtcOffset"])
                     let id = _JSONInt(d["id"])
                     var array = Array<TVGridProgram>()
+                    let catoff = NSDate().closestTo(30)
                     for p in programs {
                         var program : JSONDictionary = p as! JSONDictionary
                         program["UtcOffset"] = utc
                         program["channelID"] = id
-                        array.append(TVGridProgram.decode(program)!)
+                        var p = TVGridProgram.decode(program)!
+                        if catoff.compare(p.endTime) == .OrderedAscending {
+                            array.append(p)
+                        }
                     }
                     return array
                 }
@@ -80,6 +88,10 @@ class TVGridChannel : JSONDecodable{
             guard let prog = programs else {
                 return nil
             }
+            guard prog.count > index else {
+                assertionFailure("TVGridChannel -> program index out of range index=\(index) items:\(prog.count)")
+                return nil
+            }            
             return prog[index]
         }
         set(program)
@@ -107,7 +119,7 @@ class TVGridChannel : JSONDecodable{
         guard let prog = programs else {
             return nil
         }
-
+        print("programLive: \(atTime.toTimeString())")
         let result = prog.filter({
             let prog = $0
             //Calculate start time
@@ -153,11 +165,20 @@ class TVGridChannel : JSONDecodable{
         guard newPrograms != nil else {
             return
         }
+
+        let startIndex = programs?.count
+        var count = 0
         for programm in newPrograms! {
             let index = indexOfProgram(programm)
             if index < 0 {
+                count++
                 programs!.append(programm)
             }
+        }
+        if delegate != nil {
+            dispatch_async(dispatch_get_main_queue(), {
+                self.delegate!.tvGridChannel(self, didAddObjects: NSRange(location: startIndex!, length: count))
+            })
         }
     }
 }

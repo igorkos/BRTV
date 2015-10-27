@@ -20,8 +20,10 @@ class VideoPlayer: AVPlayerViewController {
         print("item id: \(itemID)")
         
             BRTVAPI.sharedInstance.getStreamURI(itemID!, completion: { (response: AnyObject?, error: ErrorType?) in
-                
-                let urlStr = response!["URL"] as! String
+                guard let result = response as? Dictionary<String,AnyObject> else {
+                    return
+                }
+                let urlStr = result["URL"] as! String
                 let url = NSURL(string: urlStr)!
                 print("did get url: \(url)")
                 self.player = AVPlayer(URL: url)

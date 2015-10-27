@@ -44,7 +44,15 @@ extension NSDate
         let timeString = formatter.stringFromDate(self)
         return timeString
     }
-    
+
+    func toTimeString() -> String
+    {
+        let formatter = NSDateFormatter()
+        formatter.timeStyle = .FullStyle
+        let timeString = formatter.stringFromDate(self)
+        return timeString
+    }
+
     public convenience init( value : String ) {
         let start = value.rangeOfString("Date(")!.endIndex
         let end = value.rangeOfString(")")!.startIndex
@@ -52,4 +60,5 @@ extension NSDate
         let sec = Double(value.substringWithRange(range))!/1000
         self.init(timeIntervalSince1970: sec)
     }
+    
 }

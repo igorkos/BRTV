@@ -10,12 +10,14 @@ import UIKit
 
 class LiveTVGridViewCell: UICollectionViewCell {
     @IBOutlet var title : UILabel? = nil
+    @IBOutlet var subtitle : UILabel? = nil
     var programData: TVGridProgram? = nil
     
     override func layoutSubviews(){
         super.layoutSubviews()
         if programData != nil {
             title?.text = programData!.name
+            subtitle?.text = programData!.formatedShowTime()
         }
     }
     
