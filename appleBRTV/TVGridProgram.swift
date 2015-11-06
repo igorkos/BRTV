@@ -39,9 +39,27 @@ class TVGridProgram : JSONDecodable{
         self.startOffset = startOffset
         self.UtcOffset = UtcOffset
         self.startTime = NSDate(value:startTime)
-        self.startTime = NSDate(timeInterval: Double(UtcOffset*(-60)), sinceDate: self.startTime )
+        //self.startTime = NSDate(timeInterval: Double(UtcOffset*(-60)), sinceDate: self.startTime )
         self.endTime = NSDate(timeInterval: Double(self.length*60), sinceDate: self.startTime)
         self.channelID = channelID
+    }
+    
+    required init( advisory : Int,bookmarked : Bool,description : String?,id : Int,imageCount : Int,length : Int,name : String,recorded : Bool,startOffset : Int,startTime : NSDate,UtcOffset : Int,channelID : Int){
+        self.advisory = advisory
+        self.bookmarked = bookmarked
+        self.description = description
+        self.id = id
+        self.imageCount = imageCount
+        self.length = length
+        self.name = name
+        self.recorded = recorded
+        self.startOffset = startOffset
+        self.UtcOffset = UtcOffset
+        self.startTime = startTime
+       // self.startTime = NSDate(timeInterval: Double(UtcOffset*(-60)), sinceDate: self.startTime )
+        self.endTime = NSDate(timeInterval: Double(self.length*60), sinceDate: self.startTime)
+        self.channelID = channelID
+
     }
     
     static func create(advisory : Int)(bookmarked : Bool)(description : String?)(id : Int)(imageCount : Int)(length : Int)(name : String)(recorded : Bool)(startOffset : Int)(startTime : String)(UtcOffset : Int)(channelID : Int) -> TVGridProgram {

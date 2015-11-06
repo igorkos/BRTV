@@ -8,6 +8,77 @@
 
 import Foundation
 
+func >(first:NSDate,second:NSDate) -> Bool{
+    switch first.compare(second) {
+    case .OrderedAscending:
+        return false
+    case .OrderedDescending:
+        return true
+    case .OrderedSame:
+        return false
+    }
+}
+
+func >=(first:NSDate,second:NSDate) -> Bool{
+    switch first.compare(second) {
+    case .OrderedAscending:
+        return false
+    case .OrderedDescending:
+        return true
+    case .OrderedSame:
+        return true
+    }
+}
+
+func <(first:NSDate,second:NSDate) -> Bool{
+    switch first.compare(second) {
+    case .OrderedAscending:
+        return true
+    case .OrderedDescending:
+        return false
+    case .OrderedSame:
+        return false
+    }
+}
+
+func <=(first:NSDate,second:NSDate) -> Bool{
+    switch first.compare(second) {
+    case .OrderedAscending:
+        return true
+    case .OrderedDescending:
+        return false
+    case .OrderedSame:
+        return true
+    }
+}
+
+func ==(first:NSDate,second:NSDate) -> Bool{
+    switch first.compare(second) {
+    case .OrderedAscending:
+        return false
+    case .OrderedDescending:
+        return false
+    case .OrderedSame:
+        return true
+    }
+}
+
+func -(first:NSDate,second:NSDate) -> NSTimeInterval{
+    let sec = first.timeIntervalSinceDate(second)
+    return sec
+}
+
+func +=( inout left:NSDate,right:NSTimeInterval) -> NSDate{
+    left = NSDate(timeInterval: right, sinceDate: left)
+    return left
+}
+
+func +( left:NSDate,right:NSTimeInterval) -> NSDate{
+    let date = NSDate(timeInterval: right, sinceDate: left)
+    return date
+}
+
+
 extension NSDate
 {
     //Get Hour
@@ -52,6 +123,7 @@ extension NSDate
         let timeString = formatter.stringFromDate(self)
         return timeString
     }
+    
 
     public convenience init( value : String ) {
         let start = value.rangeOfString("Date(")!.endIndex

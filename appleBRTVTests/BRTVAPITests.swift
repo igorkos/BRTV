@@ -307,15 +307,18 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
     //MARK: - TVGridDataSourceDelegate
     var expectationUpdateTVGrid : XCTestExpectation?
     
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, updateChanelsData page: Int, count: Int){
+    
+    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
         
     }
-    
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didUpdateChanelsData count: Int){
+    func controllerWillChangeContent(tvGridDataSource: TVGridDataSource ){
+        
+    }
+    func controllerDidChangeContent(tvGridDataSource: TVGridDataSource ){
         expectationUpdateTVGrid!.fulfill()
     }
-    
     func tvGridDataSource(tvGridDataSource: TVGridDataSource, didGetError: ErrorType){
         
     }
+
 }

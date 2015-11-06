@@ -16,13 +16,13 @@ let GRID_TIME_AHEAD_SEC : Double = 8 * 3600
 let GRID_TIME_BACK_SEC : Double = -3 * 3600
 
 class TVGridDataSource {
-    
+    static let sharedInstance = TVGridDataSource()
     weak var delegate : TVGridDataSourceDelegate?
     
     private var tvGrid : TVGrid?
     var tvGridStartTime: NSDate = NSDate().closestTo(30)
     var tvGridEndTime: NSDate = NSDate(timeIntervalSinceNow:GRID_TIME_AHEAD_SEC)
-    private var tvGridRequestStartTime: NSDate? = nil
+    var tvGridRequestStartTime: NSDate? = nil
     private var loading = false
     //Load TVGrid from 1 hour back from now to 8 hour ahead
     func reloadGrid(){
@@ -38,21 +38,27 @@ class TVGridDataSource {
         loadTVGrid(tvGridRequestStartTime!,end: tvGridEndTime, page: 1)
     }
     
-    func updateGrid(fromTime: NSDate ){
-        print("TVGridDataSource -> updateGrid current:\(tvGridRequestStartTime?.toTimeString()) <-> \(tvGridEndTime.toTimeString()) request from:\(fromTime.toTimeString())")
+    func updateGrid(fromTime: NSDate? ){
+        print("TVGridDataSource -> updateGrid current:\(tvGridRequestStartTime?.toTimeString()) <-> \(tvGridEndTime.toTimeString()) request from:\(fromTime?.toTimeString())")
         if loading {
             return
         }
-        let from = NSDate(timeInterval: GRID_TIME_BACK_SEC, sinceDate: fromTime)
         
-            if self.delegate != nil {
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.delegate!.controllerWillChangeContent(self)
-                })
-            }
-            tvGridRequestStartTime = from
-            tvGridEndTime = NSDate(timeInterval:GRID_TIME_AHEAD_SEC, sinceDate: tvGridRequestStartTime!)
-            loadTVGrid(tvGridRequestStartTime!, end:tvGridEndTime, page: 1)
+        var from : NSDate
+        if fromTime != nil {
+            from = NSDate(timeInterval: GRID_TIME_BACK_SEC, sinceDate: fromTime!)
+        }
+        else{
+            from = tvGridEndTime
+        }
+        if self.delegate != nil {
+            dispatch_async(dispatch_get_main_queue(), {
+                self.delegate!.controllerWillChangeContent(self)
+            })
+        }
+        tvGridRequestStartTime = from
+        tvGridEndTime = NSDate(timeInterval:GRID_TIME_AHEAD_SEC, sinceDate: tvGridRequestStartTime!)
+        loadTVGrid(tvGridRequestStartTime!, end:tvGridEndTime, page: 1)
     }
     
     private func loadTVGrid(start:NSDate, end:NSDate, page: Int){

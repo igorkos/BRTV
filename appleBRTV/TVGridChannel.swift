@@ -6,7 +6,7 @@
 //  Copyright © 2015 Aleksandr Kelbas. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 func += (left: TVGridChannel, right: TVGridChannel) -> TVGridChannel {
     left.updatePrograms(right.programs)
@@ -41,7 +41,20 @@ class TVGridChannel : JSONDecodable{
         self.name = name
         self.orderNum = orderNum
         self.UtcOffset = UtcOffset
-        self.programs = programs
+        if programs == nil || (programs != nil && programs?.count == 0){
+            self.programs = []
+            let count = Int(GRID_TIME_AHEAD_SEC/(60*30))
+            var startTime = TVGridDataSource.sharedInstance.tvGridRequestStartTime!
+            for var i = 0 ; i < count ; i++ {
+                let program = TVGridProgram(advisory: 0, bookmarked: false, description: "", id: 0, imageCount: 0, length: 30, name: "Нет данных", recorded: false, startOffset: 0, startTime: startTime, UtcOffset: UtcOffset, channelID: id)
+                self.programs?.append(program)
+                startTime += (NSTimeInterval)(30*60)
+            }
+
+        }
+        else{
+            self.programs = programs
+        }
     }
     
     static func create(accessNum : Int)( advisory  : Int)(arX  : Int)( arY : Int)( id  : Int)( name : String?)( orderNum  : Int)(UtcOffset : Int)(programs:Array<TVGridProgram>?) -> TVGridChannel {
@@ -63,23 +76,39 @@ class TVGridChannel : JSONDecodable{
                     let utc = _JSONInt(d["UtcOffset"])
                     let id = _JSONInt(d["id"])
                     var array = Array<TVGridProgram>()
-                    let catoff = NSDate().closestTo(30)
+                    let catoff = TVGridDataSource.sharedInstance.tvGridStartTime.closestTo(30)
                     for p in programs {
                         var program : JSONDictionary = p as! JSONDictionary
                         program["UtcOffset"] = utc
                         program["channelID"] = id
-                        var p = TVGridProgram.decode(program)!
-                        if catoff.compare(p.endTime) == .OrderedAscending {
-                            array.append(p)
+                        let tv = TVGridProgram.decode(program)!
+                        if catoff < tv.endTime {
+                            while tv.length > 180 {
+                                //Split very long program in grid 
+                                let tv1 = TVGridProgram.decode(program)!
+                                tv1.length = 180;
+                                tv1.startTime = tv.startTime
+                                array.append(tv1)
+                                tv.length = tv.length - 180
+                                tv.startTime +=  180*60
+                            }
+                            array.append(tv)
+                        }
+                    }
+                    if array.count == 0 {
+                        let count = Int(GRID_TIME_AHEAD_SEC/(60*30))
+                        var startTime = TVGridDataSource.sharedInstance.tvGridRequestStartTime!
+                       // Log.d("Add placehoders \(count) from \(startTime.toTimeString())" )
+                        for var i = 0 ; i < count ; i++ {
+                            let program = TVGridProgram(advisory: 0, bookmarked: false, description: "", id: 0, imageCount: 0, length: 30, name: "Нет данных", recorded: false, startOffset: 0, startTime: startTime, UtcOffset: utc, channelID: id)
+                            array.append(program)
+                            startTime += (NSTimeInterval)(30*60)
                         }
                     }
                     return array
                 }
         }
     }
-    /*
-
-*/
 
     subscript(index: Int) -> TVGridProgram?
         {
@@ -153,7 +182,10 @@ class TVGridChannel : JSONDecodable{
             return -1
         }
         let index = prog.indexOf({
-            $0.id == program.id
+            if program.id == 0 {
+                return false
+            }
+            return $0.id == program.id
         })
         guard index != nil else {
             return -1
