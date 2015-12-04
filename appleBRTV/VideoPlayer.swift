@@ -13,13 +13,14 @@ class VideoPlayer: AVPlayerViewController {
 
     var itemID: Int? = nil
     var itemURL: NSURL? = nil
+    var contentType : MediaContentType = .Live
     
     override func viewDidLoad() {
         
         assert(itemID != nil, "Item id is nil")
         print("item id: \(itemID)")
         
-            BRTVAPI.sharedInstance.getStreamURI(itemID!, completion: { (response: AnyObject?, error: ErrorType?) in
+            BRTVAPI.sharedInstance.getStreamURI(itemID!, type: contentType, completion: { (response: AnyObject?, error: ErrorType?) in
                 guard let result = response as? Dictionary<String,AnyObject> else {
                     return
                 }

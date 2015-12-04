@@ -6,7 +6,7 @@ enum Result<A> {
 
     init(_ error: ErrorType?, _ value: A) {
         if let err = error {
-            self = .Error(err)
+            self = .Error(err)            
         } else {
             self = .Value(value)
         }

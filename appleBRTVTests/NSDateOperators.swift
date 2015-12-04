@@ -46,5 +46,24 @@ class NSDateOperators: XCTestCase {
         XCTAssertTrue(date2 == date2)
         XCTAssertTrue(date3 == date3)
     }
-
+    
+    func test0(){
+        let date = DateTime(input: "/Date(-62135578800000-0500)/")
+        Log.d("Date: \(date)")
+    }
+    
+    func test1(){
+        let now = DateTime()
+        let zone = Zone("Europe/Moscow")!
+        Log.d("Zone: \(zone) offset: \(zone.secondsFromUTC)")
+        
+        let end = now.inZone(Zone("Europe/Moscow")!)
+        Log.d("now: \(now) zone: \(end)")
+        
+        var date = NSDate(timeIntervalSince1970: Double(now.milisecondsSince1970))
+         Log.d("\(date)")
+        
+        date = NSDate(timeIntervalSince1970: Double(end.milisecondsSince1970) + Double(zone.secondsFromUTC))
+        Log.d("\(date)")
+    }
 }

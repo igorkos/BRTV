@@ -25,7 +25,6 @@ func performRequest<A: JSONDecodable>(request: NSMutableURLRequest, jsonObject: 
 
 func parseResult<A: JSONDecodable>(data: NSData!, urlResponse: NSURLResponse!, error: NSError!) -> Result<A> {
     let responseResult: Result<Response> = Result(error, Response(data: data, urlResponse: urlResponse))
-    
     return responseResult >>> parseResponse
                           >>> decodeJSON
                           >>> decodeObject
@@ -34,6 +33,7 @@ func parseResult<A: JSONDecodable>(data: NSData!, urlResponse: NSURLResponse!, e
 func parseResponse(response: Response) -> Result<NSData> {
     let successRange = 200..<300
     if !successRange.contains(response.statusCode) {
+        Log.d("Error - \(NSString(data: response.data, encoding:NSUTF8StringEncoding))")
         return .Error(NSError(domain: "JSON",code:response.statusCode, userInfo: nil)) // customize the error message to your liking
     }
     return Result(nil, response.data)

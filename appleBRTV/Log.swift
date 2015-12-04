@@ -15,7 +15,7 @@ extension NSDate{
         return timeString
     }
 }
-class Log {
+public class Log {
     class func d(message: String,
        let functionName:  String = __FUNCTION__, fileNameWithPath: String = __FILE__, lineNumber: Int = __LINE__ ) {
             let fpath = NSURL(fileURLWithPath: fileNameWithPath).URLByDeletingPathExtension

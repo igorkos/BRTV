@@ -36,11 +36,11 @@ extension String: URLLiteralConvertible {
 
 extension UIImage {
 
-    func adjusts(size: CGSize, scale: CGFloat) -> UIImage {
+    func adjusts(size: CGSize, scale: CGFloat) -> UIImage? {
         let scaledSize = CGSize(width: size.width * scale, height: size.height * scale)
         UIGraphicsBeginImageContext(scaledSize)
         drawInRect(CGRect(x: 0, y: 0, width: scaledSize.width, height: scaledSize.height))
-
+        
         return UIGraphicsGetImageFromCurrentImageContext()
     }
 }

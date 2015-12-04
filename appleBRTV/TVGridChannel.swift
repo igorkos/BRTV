@@ -43,12 +43,12 @@ class TVGridChannel : JSONDecodable{
         self.UtcOffset = UtcOffset
         if programs == nil || (programs != nil && programs?.count == 0){
             self.programs = []
-            let count = Int(GRID_TIME_AHEAD_SEC/(60*30))
-            var startTime = TVGridDataSource.sharedInstance.tvGridRequestStartTime!
+            let count : Int = GRID_TIME_AHEAD_SEC / 30.seconds
+            var startTime = TVGridDataSource.sharedInstance.tvGridRequestStartTime
             for var i = 0 ; i < count ; i++ {
-                let program = TVGridProgram(advisory: 0, bookmarked: false, description: "", id: 0, imageCount: 0, length: 30, name: "Нет данных", recorded: false, startOffset: 0, startTime: startTime, UtcOffset: UtcOffset, channelID: id)
+                let program = TVGridProgram(advisory: 0, bookmarked: false, description: "", id: 0, imageCount: 0, length: 30, name: "Нет данных", recorded: false, startOffset: 0, startTime: startTime, itemTime: "", UtcOffset: UtcOffset, channelID: id)
                 self.programs?.append(program)
-                startTime += (NSTimeInterval)(30*60)
+                startTime += Duration.MinutesPerHour/2
             }
 
         }
@@ -60,7 +60,9 @@ class TVGridChannel : JSONDecodable{
     static func create(accessNum : Int)( advisory  : Int)(arX  : Int)( arY : Int)( id  : Int)( name : String?)( orderNum  : Int)(UtcOffset : Int)(programs:Array<TVGridProgram>?) -> TVGridChannel {
         return TVGridChannel(accessNum : accessNum, advisory  : advisory, arX  : arX, arY : arY, id  : id, name : name, orderNum  : orderNum,UtcOffset: UtcOffset, programs:programs)
     }
- 
+    static func arrayKey() ->String{
+        return "items"
+    }
     static func decode(json: JSON) -> TVGridChannel? {
         return  _JSONObject(json) >>> { d in
             TVGridChannel.create <^>
@@ -76,7 +78,7 @@ class TVGridChannel : JSONDecodable{
                     let utc = _JSONInt(d["UtcOffset"])
                     let id = _JSONInt(d["id"])
                     var array = Array<TVGridProgram>()
-                    let catoff = TVGridDataSource.sharedInstance.tvGridStartTime.closestTo(30)
+                    let catoff = TVGridDataSource.sharedInstance.tvGridStartTime.lastPeriodMark(30)
                     for p in programs {
                         var program : JSONDictionary = p as! JSONDictionary
                         program["UtcOffset"] = utc
@@ -96,13 +98,13 @@ class TVGridChannel : JSONDecodable{
                         }
                     }
                     if array.count == 0 {
-                        let count = Int(GRID_TIME_AHEAD_SEC/(60*30))
-                        var startTime = TVGridDataSource.sharedInstance.tvGridRequestStartTime!
+                        let count : Int = GRID_TIME_AHEAD_SEC/Duration(30*60)
+                        var startTime = TVGridDataSource.sharedInstance.tvGridRequestStartTime
                        // Log.d("Add placehoders \(count) from \(startTime.toTimeString())" )
                         for var i = 0 ; i < count ; i++ {
-                            let program = TVGridProgram(advisory: 0, bookmarked: false, description: "", id: 0, imageCount: 0, length: 30, name: "Нет данных", recorded: false, startOffset: 0, startTime: startTime, UtcOffset: utc, channelID: id)
+                            let program = TVGridProgram(advisory: 0, bookmarked: false, description: "", id: 0, imageCount: 0, length: 30, name: "Нет данных", recorded: false, startOffset: 0, startTime: startTime,itemTime:"", UtcOffset: utc, channelID: id)
                             array.append(program)
-                            startTime += (NSTimeInterval)(30*60)
+                            startTime += 30*60
                         }
                     }
                     return array
@@ -144,24 +146,16 @@ class TVGridChannel : JSONDecodable{
         }
     }
   
-    func programLive( atTime: NSDate ) -> TVGridProgram? {
+    func programLive( atTime: DateTime ) -> TVGridProgram? {
         guard let prog = programs else {
             return nil
         }
-        print("programLive: \(atTime.toTimeString())")
+        print("programLive: \(atTime)")
         let result = prog.filter({
-            let prog = $0
-            //Calculate start time
-            let start = prog.startTime
-            let end = prog.endTime
-            
-            if atTime.compare(start) == .OrderedAscending {
-                return false
+            if atTime >= $0.startTime && atTime < $0.endTime {
+                return true
             }
-            if atTime.compare(end) == .OrderedDescending {
-                return false
-            }
-            return true
+            return false
         })
         guard result.count > 0 else {
             return nil
@@ -170,7 +164,7 @@ class TVGridChannel : JSONDecodable{
     }
     
     func indexOfLiveProgram() -> Int {
-        guard let liveProgram = programLive( NSDate() ) else {
+        guard let liveProgram = programLive( DateTime() ) else {
             return 0
         }
         let index = indexOfProgram(liveProgram)
@@ -211,6 +205,18 @@ class TVGridChannel : JSONDecodable{
             dispatch_async(dispatch_get_main_queue(), {
                 self.delegate!.tvGridChannel(self, didAddObjects: NSRange(location: startIndex!, length: count))
             })
+        }
+    }
+    
+    func remove(date: DateTime){
+        let array = programs!
+        for program in array {
+            if program.endTime < date {
+                programs?.removeFirst()
+            }
+            else{
+                break
+            }
         }
     }
 }

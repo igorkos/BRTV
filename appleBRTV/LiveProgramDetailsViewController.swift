@@ -18,6 +18,7 @@ class LiveProgramDetailsViewController: UIViewController {
     
     var imageType = 1
     var program: TVGridProgram? = nil
+    var contentType : MediaContentType = .Live
     
     override func viewDidLoad() {
         self.preferredContentSize = CGSizeMake(self.view.frame.size.width, 520)
@@ -42,7 +43,7 @@ class LiveProgramDetailsViewController: UIViewController {
                 })
             }
             self.programImage?.image = nil
-            programTime.text = "\(program!.startTime.toShortTimeString()) : \(program!.endTime.toShortTimeString())"
+            programTime.text = "\(program!.startTime.toShortString()) : \(program!.endTime.toShortString())"
             
         }
     }
@@ -50,9 +51,15 @@ class LiveProgramDetailsViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         switch  segue.identifier! {
         case "LiveChanelPlay":
-            let itemID = program!.channelID
             let dest = segue.destinationViewController as! VideoPlayer
-            dest.itemID = itemID
+            dest.contentType = contentType
+            switch contentType {
+            case .Live:
+                dest.itemID = program!.channelID
+            case .Archive:
+                dest.itemID = program!.id
+            }
+            
         default:
             break
         }

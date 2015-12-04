@@ -80,11 +80,12 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         })
     }
     
+   
     func test_02_BRTVAPIGetTVGrid()
     {
         let expectation = expectationWithDescription("Did get tvgrid")
-        let start = NSDate(timeIntervalSinceNow:-1800)
-        let end  = NSDate(timeIntervalSinceNow:18000)
+        let start = DateTime(lastPeriodMark:30)
+        let end  = start + Duration(18000)
 
         BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
@@ -97,20 +98,50 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
-
+    
+   
     func test_03_BRTVAPIGetArchiveChannels()
     {
         let expectation = expectationWithDescription("Did get channels")
-        
         BRTVAPI.sharedInstance.getClientArchiveChannels( { (response: AnyObject?, error: ErrorType?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
-            XCTAssert(response is BRTVResponseObject, "Response format is incorrect")
-            
-            let channels =  (response as! BRTVResponseObject).response as! Dictionary<String,AnyObject>
-            
-            XCTAssertNotNil(channels["items"], "Response doesn't contain channel items")
-            
+            XCTAssert(response is BRTVResponseArrayObject<ArchiveChannel>, "Response format is incorrect")
+            Log.d("\(response)")
+            expectation.fulfill()
+        })
+        //"bd0320a5d0131fa3fe1899f7d1feef2d",
+        waitForExpectationsWithTimeout(300, handler: { (error: ErrorType?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+    }
+
+    func test_04_BRTVAPIGetArchiveChannelProgramms()
+    {
+        var archiveChannels : Array<ArchiveChannel>?
+        var expectation = expectationWithDescription("Did get channels")
+        BRTVAPI.sharedInstance.getClientArchiveChannels( { (response: AnyObject?, error: ErrorType?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is BRTVResponseArrayObject<ArchiveChannel>, "Response format is incorrect")
+            Log.d("\(response)")
+            archiveChannels = (response as? BRTVResponseArrayObject<ArchiveChannel>)?.array
+            expectation.fulfill()
+        })
+        //"bd0320a5d0131fa3fe1899f7d1feef2d",
+        waitForExpectationsWithTimeout(300, handler: { (error: ErrorType?) in
+            XCTAssertNil(error, "Failed to connect to BRTV server")
+        })
+
+        expectation = expectationWithDescription("Did get channels")
+        
+        BRTVAPI.sharedInstance.getArchiveProgramGuide(archiveChannels![0].id,page: 0,completion:  { (response: AnyObject?, error: ErrorType?) in
+            XCTAssertNil(error, "There was an error returned by the API handler")
+            XCTAssertNotNil(response, "Response object is nil")
+            XCTAssert(response is AchiveChannelPrograms, "Response format is incorrect")
+            Log.d("\(response)")
+            let programs = (response as! AchiveChannelPrograms).programs
+            Log.d("\(programs)")
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
@@ -118,14 +149,12 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
-
     
-    
-    func test_04_BRTVAPIGetURI()
+    func test_05_BRTVAPIGetURI()
     {
         let expectation = expectationWithDescription("did get uri")
         
-        BRTVAPI.sharedInstance.getStreamURI(24,  completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getStreamURI(1, type: .Live, completion: { (response: AnyObject?, error: ErrorType?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is BRTVResponseObject, "Response format is incorrect")
@@ -140,7 +169,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         })
     }
     
-    func test_05_BRTVAPIGetImageURI()
+    func test_06_BRTVAPIGetImageURI()
     {
         let expectation = expectationWithDescription("did get GetImageURI")
         
@@ -155,7 +184,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         })
     }
     
-    func test_06_BRTVAPIgetMediaImageType()
+    func test_07_BRTVAPIgetMediaImageType()
     {
         let expectation = expectationWithDescription("did get MediaImageType")
         
@@ -171,7 +200,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         })
     }
     
-    func test_07_BRTVAPIgetMediaZoneInfo()
+    func test_08_BRTVAPIgetMediaZoneInfo()
     {
         let expectation = expectationWithDescription("did get MediaZoneInfo")
         
@@ -191,8 +220,8 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         
         let expectation = expectationWithDescription("did get TVGridFullLoad")
         
-        let start = NSDate(timeIntervalSinceNow:-1800)
-        let end  = NSDate(timeIntervalSinceNow:18000)
+        let start = DateTime(lastPeriodMark:30)
+        let end  = start + Duration(18000)
         var data : TVGrid? = nil
         
         BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: page, completion: { (response: AnyObject?, error: ErrorType?) in
@@ -209,7 +238,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         return data
     }
     
-    func test_08_BRTVAPIGetTVGridFullLoad()
+    func test_09_BRTVAPIGetTVGridFullLoad()
     {
         var tvgrid : TVGrid? = nil
         var nextPage = 1
@@ -227,12 +256,12 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         
     }
     
-    func test_09_BRTVAPIUpdateTVGrid()
+    func test_10_BRTVAPIUpdateTVGrid()
     {
         var tvgrid : TVGrid? = nil
         var expectation = expectationWithDescription("Did get tvgrid")
-        var start = NSDate(timeIntervalSinceNow:-1800)
-        var end  = NSDate(timeIntervalSinceNow:18000)
+        var start = DateTime(lastPeriodMark:30)
+        var end  = start + Duration(18000)
         
         BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
@@ -250,7 +279,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         
         expectation = expectationWithDescription("Did get tvgrid")
         start = end
-        end = NSDate(timeInterval:18000 , sinceDate: start)
+        end = start + Duration(18000)
         BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
@@ -265,12 +294,12 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         XCTAssertGreaterThanOrEqual((tvgrid?.chanels![0].count)!,programsCount!)
     }
 
-    func test_10_BRTVAPITVGridDataSource()
+    func test_11_BRTVAPITVGridDataSource()
     {
         var tvgrid : TVGrid? = nil
         var expectation = expectationWithDescription("Did get tvgrid")
-        var start = NSDate(timeIntervalSinceNow:-1800)
-        var end  = NSDate(timeIntervalSinceNow:18000)
+        var start = DateTime(lastPeriodMark:30)
+        var end  = start + Duration(18000)
         
         BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
@@ -288,7 +317,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         
         expectation = expectationWithDescription("Did get tvgrid")
         start = end
-        end = NSDate(timeInterval:18000 , sinceDate: start)
+        end = start + Duration(18000)
         BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")

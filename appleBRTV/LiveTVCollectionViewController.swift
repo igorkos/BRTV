@@ -28,10 +28,11 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
         tvGrid.delegate = self
         tvGrid.reloadGrid()        
     }
-
-    func updateData(){
-        tvGrid.updateGrid(nil)
+    
+    override func viewWillAppear(animated: Bool){
+         tvGrid.updateGrid()
     }
+    
     // MARK: - Navigation
     
     
@@ -42,6 +43,7 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
             let dest = segue.destinationViewController as! LiveProgramDetailsViewController
             let cell = sender as! LiveTVGridViewCell
             dest.program = cell.programData
+            dest.contentType = .Live
             let popOverPresentationController = segue.destinationViewController.popoverPresentationController
             let index = NSIndexPath(forItem: 0, inSection: cell.indexPath!.section)
             let view = collectionView?.supplementaryViewForElementKind(UICollectionElementKindSectionHeader, atIndexPath: index)
@@ -69,8 +71,8 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
             let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseTimeIdentifier, forIndexPath: indexPath) as! LiveTVTimeGridViewCell
-            let cellTime  = tvGrid.tvGridStartTime.dateByAddingTimeInterval(Double(indexPath.item*30*60) )
-            cell.title?.text = cellTime.toShortTimeString()
+            let cellTime  = tvGrid.tvGridStartTime + (indexPath.item*30*60)
+            cell.title?.text = cellTime.toShortString()
             return cell
         }
         else {
@@ -124,8 +126,11 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
     }
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath){
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! LiveTVGridViewCell
-        performSegueWithIdentifier("ShowProgramDetails", sender: cell)
+        
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        if cell is  LiveTVGridViewCell {
+            performSegueWithIdentifier("ShowProgramDetails", sender: cell)
+        }
     }
 
     
@@ -149,7 +154,7 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
         let program = channel![indexPath.item]
         var lenght = program!.length
         if tvGrid.tvGridStartTime > program!.startTime {
-            lenght = Int(program!.endTime - tvGrid.tvGridStartTime)/60
+            lenght = (program!.endTime - tvGrid.tvGridStartTime)/Duration(60)
         }
         let width = minuteWidth*CGFloat(lenght)
         // print("sizeForItem -> width=\(lenght)")
@@ -161,15 +166,16 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
     }
     
     //MARK: - TVGridDataSourceDelegate
-    
+    var spinner : SwiftSpinner?
     func tvGridDataSource(tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
     }
     func controllerWillChangeContent(tvGridDataSource: TVGridDataSource ){
-
+        spinner = SwiftSpinner.show("Loading TV Programs...",toView: self.view)
     }
     func controllerDidChangeContent(tvGridDataSource: TVGridDataSource ){
         (collectionView?.collectionViewLayout as! InfiniteHorizontalLayout).maxWith = 0
         collectionView?.reloadData()
+        spinner?.hide()
     }
     func tvGridDataSource(tvGridDataSource: TVGridDataSource, didGetError: ErrorType){
         

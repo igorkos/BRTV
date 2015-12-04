@@ -12,57 +12,62 @@ import UIKit
 
 
 
-let GRID_TIME_AHEAD_SEC : Double = 8 * 3600
-let GRID_TIME_BACK_SEC : Double = -3 * 3600
+let GRID_TIME_AHEAD_SEC : Duration = Duration(8 * 3600)
+let GRID_TIME_BACK_SEC : Duration = Duration(3 * 3600)
 
 class TVGridDataSource {
     static let sharedInstance = TVGridDataSource()
     weak var delegate : TVGridDataSourceDelegate?
     
     private var tvGrid : TVGrid?
-    var tvGridStartTime: NSDate = NSDate().closestTo(30)
-    var tvGridEndTime: NSDate = NSDate(timeIntervalSinceNow:GRID_TIME_AHEAD_SEC)
-    var tvGridRequestStartTime: NSDate? = nil
+    var tvGridStartTime: DateTime = DateTime(lastPeriodMark:30)
+    var tvGridEndTime: DateTime = DateTime(lastPeriodMark:30) + GRID_TIME_AHEAD_SEC
+    
+    var tvGridRequestStartTime: DateTime = DateTime()
     private var loading = false
+    
+    func isNeedReload(){
+        let nowTime = DateTime(lastPeriodMark:30)
+        if nowTime != tvGridStartTime{
+            
+        }
+    }
     //Load TVGrid from 1 hour back from now to 8 hour ahead
     func reloadGrid(){
-        print("TVGridDataSource -> reloadGrid")
+        Log.d("")
         if self.delegate != nil {
             dispatch_async(dispatch_get_main_queue(), {
                 self.delegate!.controllerWillChangeContent(self)
             })
         }
-        tvGridStartTime = NSDate().closestTo(30)
-        tvGridEndTime  = NSDate(timeIntervalSinceNow:GRID_TIME_AHEAD_SEC)
+        tvGridStartTime = DateTime(lastPeriodMark:30)
+        tvGridEndTime  = tvGridStartTime + GRID_TIME_AHEAD_SEC
         tvGridRequestStartTime = tvGridStartTime
-        loadTVGrid(tvGridRequestStartTime!,end: tvGridEndTime, page: 1)
+        loadTVGrid(tvGridRequestStartTime,end: tvGridEndTime, page: 1)
     }
     
-    func updateGrid(fromTime: NSDate? ){
-        print("TVGridDataSource -> updateGrid current:\(tvGridRequestStartTime?.toTimeString()) <-> \(tvGridEndTime.toTimeString()) request from:\(fromTime?.toTimeString())")
+    func updateGrid(){
         if loading {
             return
         }
         
-        var from : NSDate
-        if fromTime != nil {
-            from = NSDate(timeInterval: GRID_TIME_BACK_SEC, sinceDate: fromTime!)
-        }
-        else{
+        var from = DateTime(lastPeriodMark:30);
+        if from != tvGridRequestStartTime {
+            tvGrid!.remove(from)
+            tvGridRequestStartTime = from
             from = tvGridEndTime
+            if self.delegate != nil {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.delegate!.controllerWillChangeContent(self)
+                })
+            }
+            tvGridRequestStartTime = from
+            tvGridEndTime = tvGridRequestStartTime + GRID_TIME_AHEAD_SEC
+            loadTVGrid(tvGridRequestStartTime, end:tvGridEndTime, page: 1)
         }
-        if self.delegate != nil {
-            dispatch_async(dispatch_get_main_queue(), {
-                self.delegate!.controllerWillChangeContent(self)
-            })
-        }
-        tvGridRequestStartTime = from
-        tvGridEndTime = NSDate(timeInterval:GRID_TIME_AHEAD_SEC, sinceDate: tvGridRequestStartTime!)
-        loadTVGrid(tvGridRequestStartTime!, end:tvGridEndTime, page: 1)
     }
     
-    private func loadTVGrid(start:NSDate, end:NSDate, page: Int){
-        print("TVGridDataSource -> loadTVGrid page:\(page)")
+    private func loadTVGrid(start:DateTime, end:DateTime, page: Int){
         loading = true
         BRTVAPI.sharedInstance.getClientTVGrid(start, end: end, page: page, completion: { (response: AnyObject?, error: ErrorType?) in
                 guard let new_grid = response as? TVGrid else {
@@ -75,7 +80,7 @@ class TVGridDataSource {
                     return
                 }
                 
-                print("TVGridDataSource -> loadTVGrid recived page:\(new_grid.paging?.pageNumber) with \(new_grid.count) channels")
+                Log.d("Recived page:\(new_grid.paging!.pageNumber) with \(new_grid.count) channels")
                 
                 let range = NSRange(location: ((new_grid.paging?.pageNumber)!-1)*(new_grid.paging?.itemsOnPage)! , length: new_grid.count)
                 //First time load
@@ -101,7 +106,7 @@ class TVGridDataSource {
                     })
                 }
                 
-                if self.tvGrid!.paging?.pageNumber != self.tvGrid!.paging?.totalPages {
+                if self.tvGrid!.paging?.pageNumber <= self.tvGrid!.paging?.totalPages {
                     //Not all pages loaded load next
                     self.loadTVGrid( start,end: end, page: (self.tvGrid!.paging?.pageNumber)! + 1)
                 }

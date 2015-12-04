@@ -54,6 +54,10 @@ class ItemPaging : JSONDecodable{
         }
 
     }
+    
+    static func arrayKey() ->String{
+        return ""
+    }
 }
 
 
@@ -86,7 +90,9 @@ class TVGrid : JSONDecodable{
                 }
         }
     }
-    
+    static func arrayKey() ->String{
+        return ""
+    }
     //MARK: properties
     var count : Int {
         get{
@@ -129,6 +135,12 @@ class TVGrid : JSONDecodable{
                 return nil
             }
             return ch[index]
+        }
+    }
+    
+    func remove( time: DateTime){
+        for chanel in chanels! {
+            chanel.remove(time)
         }
     }
     

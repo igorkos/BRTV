@@ -89,7 +89,25 @@ extension NSDate
         let hour = components.hour
         return hour
     }
+
+    //Get day
+    func day() -> Int
+    {
+        let calendar = NSCalendar.currentCalendar()
+        let day = calendar.ordinalityOfUnit(.Day, inUnit: .Year, forDate: self)
+        return day
+    }
     
+    //Get year
+    func year() -> Int
+    {
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components(.Year, fromDate: self)
+        let year = components.year
+        return year
+
+    }
+
     //Get Minute
     func minute() -> Int
     {
@@ -116,16 +134,28 @@ extension NSDate
         return timeString
     }
 
-    func toTimeString() -> String
+    func toDateString() -> String
     {
         let formatter = NSDateFormatter()
-        formatter.timeStyle = .FullStyle
+        formatter.dateFormat = "EEEE MM.dd"
         let timeString = formatter.stringFromDate(self)
         return timeString
     }
+
     
+    func toTimeString() -> String
+    {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "HH:mm"
+        let timeString = formatter.stringFromDate(self)
+        return timeString
+    }
 
     public convenience init( value : String ) {
+        guard value.characters.count > 0 else{
+            self.init()
+            return
+        }
         let start = value.rangeOfString("Date(")!.endIndex
         let end = value.rangeOfString(")")!.startIndex
         let range = Range(start: start, end: end)

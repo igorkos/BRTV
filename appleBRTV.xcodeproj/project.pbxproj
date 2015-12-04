@@ -27,15 +27,57 @@
 		FA1B84AD1BD85E1900417B44 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B84A71BD85E1900417B44 /* NetworkClient.swift */; };
 		FA1B84AE1BD85E1900417B44 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B84A81BD85E1900417B44 /* Response.swift */; };
 		FA1B84AF1BD85E1900417B44 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B84A91BD85E1900417B44 /* Result.swift */; };
+		FA2403A01BF5613800AD34E7 /* SwiftSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA24039F1BF5613800AD34E7 /* SwiftSpinner.swift */; };
+		FA352B761BEFEA7700FF4C60 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B691BEFEA7700FF4C60 /* Clock.swift */; };
+		FA352B771BEFEA7700FF4C60 /* DateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6A1BEFEA7700FF4C60 /* DateTime.swift */; };
+		FA352B781BEFEA7700FF4C60 /* DateTimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6B1BEFEA7700FF4C60 /* DateTimeError.swift */; };
+		FA352B791BEFEA7700FF4C60 /* DayOfWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6C1BEFEA7700FF4C60 /* DayOfWeek.swift */; };
+		FA352B7A1BEFEA7700FF4C60 /* Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6D1BEFEA7700FF4C60 /* Duration.swift */; };
+		FA352B7B1BEFEA7700FF4C60 /* Instant.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6E1BEFEA7700FF4C60 /* Instant.swift */; };
+		FA352B7C1BEFEA7700FF4C60 /* LocalDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6F1BEFEA7700FF4C60 /* LocalDate.swift */; };
+		FA352B7D1BEFEA7700FF4C60 /* LocalDateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B701BEFEA7700FF4C60 /* LocalDateTime.swift */; };
+		FA352B7E1BEFEA7700FF4C60 /* LocalTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B711BEFEA7700FF4C60 /* LocalTime.swift */; };
+		FA352B7F1BEFEA7700FF4C60 /* Month.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B721BEFEA7700FF4C60 /* Month.swift */; };
+		FA352B801BEFEA7700FF4C60 /* Period.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B731BEFEA7700FF4C60 /* Period.swift */; };
+		FA352B811BEFEA7700FF4C60 /* Year.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B741BEFEA7700FF4C60 /* Year.swift */; };
+		FA352B821BEFEA7700FF4C60 /* Zone.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B751BEFEA7700FF4C60 /* Zone.swift */; };
+		FA352B841BEFED2000FF4C60 /* DateTimeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B831BEFED2000FF4C60 /* DateTimeExtensions.swift */; };
+		FA352B851BEFEFD000FF4C60 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B691BEFEA7700FF4C60 /* Clock.swift */; };
+		FA352B861BEFEFD000FF4C60 /* DateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6A1BEFEA7700FF4C60 /* DateTime.swift */; };
+		FA352B871BEFEFD000FF4C60 /* DateTimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6B1BEFEA7700FF4C60 /* DateTimeError.swift */; };
+		FA352B881BEFEFD000FF4C60 /* DayOfWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6C1BEFEA7700FF4C60 /* DayOfWeek.swift */; };
+		FA352B891BEFEFD000FF4C60 /* Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6D1BEFEA7700FF4C60 /* Duration.swift */; };
+		FA352B8A1BEFEFD000FF4C60 /* Instant.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6E1BEFEA7700FF4C60 /* Instant.swift */; };
+		FA352B8B1BEFEFD000FF4C60 /* LocalDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B6F1BEFEA7700FF4C60 /* LocalDate.swift */; };
+		FA352B8C1BEFEFD000FF4C60 /* LocalDateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B701BEFEA7700FF4C60 /* LocalDateTime.swift */; };
+		FA352B8D1BEFEFD000FF4C60 /* LocalTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B711BEFEA7700FF4C60 /* LocalTime.swift */; };
+		FA352B8E1BEFEFD000FF4C60 /* Month.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B721BEFEA7700FF4C60 /* Month.swift */; };
+		FA352B8F1BEFEFD000FF4C60 /* Period.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B731BEFEA7700FF4C60 /* Period.swift */; };
+		FA352B901BEFEFD000FF4C60 /* Year.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B741BEFEA7700FF4C60 /* Year.swift */; };
+		FA352B911BEFEFD000FF4C60 /* Zone.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B751BEFEA7700FF4C60 /* Zone.swift */; };
+		FA352B921BEFEFD000FF4C60 /* DateTimeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA352B831BEFED2000FF4C60 /* DateTimeExtensions.swift */; };
 		FA4563E31BD1966000B3B256 /* Diskcached.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4563DE1BD1966000B3B256 /* Diskcached.swift */; };
 		FA4563E41BD1966000B3B256 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4563E01BD1966000B3B256 /* ImageLoader.swift */; };
 		FA4563E61BD1966000B3B256 /* UIImageView+ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4563E21BD1966000B3B256 /* UIImageView+ImageLoader.swift */; };
 		FA492E6B1BED1F7000D1901B /* NSDateOperators.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA492E6A1BED1F7000D1901B /* NSDateOperators.swift */; };
+		FA4CD6401BED3D2500578BFB /* ArchiveSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4CD63F1BED3D2500578BFB /* ArchiveSplitViewController.swift */; };
+		FA4CD6411BED3D2500578BFB /* ArchiveSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4CD63F1BED3D2500578BFB /* ArchiveSplitViewController.swift */; };
+		FA4CD6421BED490B00578BFB /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4D990F1BE82C1C0016D551 /* Log.swift */; };
 		FA4D990D1BE7FEC70016D551 /* InfiniteHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4D990C1BE7FEC70016D551 /* InfiniteHorizontalLayout.swift */; };
 		FA4D99101BE82C1C0016D551 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4D990F1BE82C1C0016D551 /* Log.swift */; };
 		FA55993A1BDACED0007B357A /* TVGridChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD03FD71BDAAFEE00727F8F /* TVGridChannel.swift */; };
+		FA6011231BED4D7600698920 /* TVArchiveDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6011221BED4D7600698920 /* TVArchiveDataSource.swift */; };
+		FA6011241BED4D7600698920 /* TVArchiveDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6011221BED4D7600698920 /* TVArchiveDataSource.swift */; };
+		FA6011261BED585D00698920 /* ArchiveChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6011251BED585D00698920 /* ArchiveChannel.swift */; };
+		FA6011271BED585D00698920 /* ArchiveChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6011251BED585D00698920 /* ArchiveChannel.swift */; };
+		FA970C151BED684C000CC390 /* AchiveChannelsRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA970C141BED684C000CC390 /* AchiveChannelsRootController.swift */; };
+		FA970C161BED684C000CC390 /* AchiveChannelsRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA970C141BED684C000CC390 /* AchiveChannelsRootController.swift */; };
 		FABC549E1BD21FA400855798 /* NSDate+Compomets.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABC549D1BD21FA400855798 /* NSDate+Compomets.swift */; };
 		FABC54A01BD235C800855798 /* LiveProgramDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABC549F1BD235C800855798 /* LiveProgramDetailsViewController.swift */; };
+		FABFB48C1BEEBC0D0064A832 /* AchiveChannelPrograms.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABFB48B1BEEBC0D0064A832 /* AchiveChannelPrograms.swift */; };
+		FABFB48D1BEEBC0D0064A832 /* AchiveChannelPrograms.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABFB48B1BEEBC0D0064A832 /* AchiveChannelPrograms.swift */; };
+		FACB12151BED800C00994DA7 /* AchiveChannelProgramsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACB12141BED800C00994DA7 /* AchiveChannelProgramsController.swift */; };
+		FACB12161BED800C00994DA7 /* AchiveChannelProgramsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACB12141BED800C00994DA7 /* AchiveChannelProgramsController.swift */; };
 		FAD03FD81BDAAFEE00727F8F /* TVGridChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD03FD71BDAAFEE00727F8F /* TVGridChannel.swift */; };
 		FADA86C61BDAEDBD0049FD8D /* TVGridProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADA86C51BDAEDBD0049FD8D /* TVGridProgram.swift */; };
 		FADA86C71BDAEDBD0049FD8D /* TVGridProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADA86C51BDAEDBD0049FD8D /* TVGridProgram.swift */; };
@@ -117,15 +159,36 @@
 		FA1B84A71BD85E1900417B44 /* NetworkClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NetworkClient.swift; path = FunctionalJSON/NetworkClient.swift; sourceTree = "<group>"; };
 		FA1B84A81BD85E1900417B44 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Response.swift; path = FunctionalJSON/Response.swift; sourceTree = "<group>"; };
 		FA1B84A91BD85E1900417B44 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Result.swift; path = FunctionalJSON/Result.swift; sourceTree = "<group>"; };
+		FA24039F1BF5613800AD34E7 /* SwiftSpinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSpinner.swift; sourceTree = "<group>"; };
+		FA352B691BEFEA7700FF4C60 /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
+		FA352B6A1BEFEA7700FF4C60 /* DateTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTime.swift; sourceTree = "<group>"; };
+		FA352B6B1BEFEA7700FF4C60 /* DateTimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTimeError.swift; sourceTree = "<group>"; };
+		FA352B6C1BEFEA7700FF4C60 /* DayOfWeek.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DayOfWeek.swift; sourceTree = "<group>"; };
+		FA352B6D1BEFEA7700FF4C60 /* Duration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Duration.swift; sourceTree = "<group>"; };
+		FA352B6E1BEFEA7700FF4C60 /* Instant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instant.swift; sourceTree = "<group>"; };
+		FA352B6F1BEFEA7700FF4C60 /* LocalDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDate.swift; sourceTree = "<group>"; };
+		FA352B701BEFEA7700FF4C60 /* LocalDateTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDateTime.swift; sourceTree = "<group>"; };
+		FA352B711BEFEA7700FF4C60 /* LocalTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalTime.swift; sourceTree = "<group>"; };
+		FA352B721BEFEA7700FF4C60 /* Month.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Month.swift; sourceTree = "<group>"; };
+		FA352B731BEFEA7700FF4C60 /* Period.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Period.swift; sourceTree = "<group>"; };
+		FA352B741BEFEA7700FF4C60 /* Year.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Year.swift; sourceTree = "<group>"; };
+		FA352B751BEFEA7700FF4C60 /* Zone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Zone.swift; sourceTree = "<group>"; };
+		FA352B831BEFED2000FF4C60 /* DateTimeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTimeExtensions.swift; sourceTree = "<group>"; };
 		FA4563DE1BD1966000B3B256 /* Diskcached.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diskcached.swift; sourceTree = "<group>"; };
 		FA4563DF1BD1966000B3B256 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
 		FA4563E01BD1966000B3B256 /* ImageLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		FA4563E21BD1966000B3B256 /* UIImageView+ImageLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+ImageLoader.swift"; sourceTree = "<group>"; };
 		FA492E6A1BED1F7000D1901B /* NSDateOperators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDateOperators.swift; sourceTree = "<group>"; };
+		FA4CD63F1BED3D2500578BFB /* ArchiveSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveSplitViewController.swift; sourceTree = "<group>"; };
 		FA4D990C1BE7FEC70016D551 /* InfiniteHorizontalLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfiniteHorizontalLayout.swift; sourceTree = "<group>"; };
 		FA4D990F1BE82C1C0016D551 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		FA6011221BED4D7600698920 /* TVArchiveDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TVArchiveDataSource.swift; sourceTree = "<group>"; };
+		FA6011251BED585D00698920 /* ArchiveChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveChannel.swift; sourceTree = "<group>"; };
+		FA970C141BED684C000CC390 /* AchiveChannelsRootController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchiveChannelsRootController.swift; sourceTree = "<group>"; };
 		FABC549D1BD21FA400855798 /* NSDate+Compomets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDate+Compomets.swift"; sourceTree = "<group>"; };
 		FABC549F1BD235C800855798 /* LiveProgramDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveProgramDetailsViewController.swift; sourceTree = "<group>"; };
+		FABFB48B1BEEBC0D0064A832 /* AchiveChannelPrograms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchiveChannelPrograms.swift; sourceTree = "<group>"; };
+		FACB12141BED800C00994DA7 /* AchiveChannelProgramsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AchiveChannelProgramsController.swift; sourceTree = "<group>"; };
 		FAD03FD71BDAAFEE00727F8F /* TVGridChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TVGridChannel.swift; sourceTree = "<group>"; };
 		FADA86C51BDAEDBD0049FD8D /* TVGridProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TVGridProgram.swift; sourceTree = "<group>"; };
 		FAE1299F1BE7F8020032AA51 /* LiveTVCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveTVCollectionViewController.swift; sourceTree = "<group>"; };
@@ -242,11 +305,14 @@
 		5FFB23611BCB9DE1008EE818 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FA24039E1BF5612500AD34E7 /* Views */,
+				FA352B681BEFEA7700FF4C60 /* DateTimeKit */,
 				FA4D990E1BE82BF10016D551 /* Log */,
 				FAEBC9BF1BD98C290076FA50 /* BRTVAPI */,
 				FA1B84971BD85D6800417B44 /* JSON */,
 				FA9E9AF21BD80AE2007B561C /* Assets */,
 				FA4563DD1BD1966000B3B256 /* ImageLoader */,
+				FA4CD63E1BED3CDE00578BFB /* Archive */,
 				FA10C57B1BD1854F0018C5A7 /* TVLiveController */,
 				5F7382061BC890BE005CFE63 /* LoginViewController.swift */,
 				5FFB235D1BCAF9ED008EE818 /* VideoPlayer.swift */,
@@ -287,6 +353,36 @@
 			name = JSON;
 			sourceTree = "<group>";
 		};
+		FA24039E1BF5612500AD34E7 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FA24039F1BF5613800AD34E7 /* SwiftSpinner.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		FA352B681BEFEA7700FF4C60 /* DateTimeKit */ = {
+			isa = PBXGroup;
+			children = (
+				FA352B691BEFEA7700FF4C60 /* Clock.swift */,
+				FA352B6A1BEFEA7700FF4C60 /* DateTime.swift */,
+				FA352B6B1BEFEA7700FF4C60 /* DateTimeError.swift */,
+				FA352B6C1BEFEA7700FF4C60 /* DayOfWeek.swift */,
+				FA352B6D1BEFEA7700FF4C60 /* Duration.swift */,
+				FA352B6E1BEFEA7700FF4C60 /* Instant.swift */,
+				FA352B6F1BEFEA7700FF4C60 /* LocalDate.swift */,
+				FA352B701BEFEA7700FF4C60 /* LocalDateTime.swift */,
+				FA352B711BEFEA7700FF4C60 /* LocalTime.swift */,
+				FA352B721BEFEA7700FF4C60 /* Month.swift */,
+				FA352B731BEFEA7700FF4C60 /* Period.swift */,
+				FA352B741BEFEA7700FF4C60 /* Year.swift */,
+				FA352B751BEFEA7700FF4C60 /* Zone.swift */,
+				FA352B831BEFED2000FF4C60 /* DateTimeExtensions.swift */,
+			);
+			name = DateTimeKit;
+			path = DateTimeKit/DateTimeKit;
+			sourceTree = SOURCE_ROOT;
+		};
 		FA4563DD1BD1966000B3B256 /* ImageLoader */ = {
 			isa = PBXGroup;
 			children = (
@@ -297,6 +393,19 @@
 			);
 			name = ImageLoader;
 			path = ../ImageLoaderSwift/ImageLoader;
+			sourceTree = "<group>";
+		};
+		FA4CD63E1BED3CDE00578BFB /* Archive */ = {
+			isa = PBXGroup;
+			children = (
+				FA970C141BED684C000CC390 /* AchiveChannelsRootController.swift */,
+				FACB12141BED800C00994DA7 /* AchiveChannelProgramsController.swift */,
+				FA4CD63F1BED3D2500578BFB /* ArchiveSplitViewController.swift */,
+				FA6011221BED4D7600698920 /* TVArchiveDataSource.swift */,
+				FA6011251BED585D00698920 /* ArchiveChannel.swift */,
+				FABFB48B1BEEBC0D0064A832 /* AchiveChannelPrograms.swift */,
+			);
+			name = Archive;
 			sourceTree = "<group>";
 		};
 		FA4D990E1BE82BF10016D551 /* Log */ = {
@@ -458,34 +567,55 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA352B781BEFEA7700FF4C60 /* DateTimeError.swift in Sources */,
+				FA352B791BEFEA7700FF4C60 /* DayOfWeek.swift in Sources */,
 				FABC549E1BD21FA400855798 /* NSDate+Compomets.swift in Sources */,
 				FAEBC9C11BD98C5B0076FA50 /* ClientAppSettings.swift in Sources */,
+				FA352B7A1BEFEA7700FF4C60 /* Duration.swift in Sources */,
+				FA352B761BEFEA7700FF4C60 /* Clock.swift in Sources */,
+				FA4CD6401BED3D2500578BFB /* ArchiveSplitViewController.swift in Sources */,
+				FA6011231BED4D7600698920 /* TVArchiveDataSource.swift in Sources */,
+				FACB12151BED800C00994DA7 /* AchiveChannelProgramsController.swift in Sources */,
 				FA10C57E1BD185800018C5A7 /* LiveTVGridViewCell.swift in Sources */,
 				5F7382351BC8914A005CFE63 /* BRTVAPI.swift in Sources */,
 				FA4563E61BD1966000B3B256 /* UIImageView+ImageLoader.swift in Sources */,
 				5F21D6571BCBF63000059CAD /* SplashScreenViewController.swift in Sources */,
+				FA352B7B1BEFEA7700FF4C60 /* Instant.swift in Sources */,
 				FAEABE0E1BD9A2C100C13657 /* BRTVResponseObject.swift in Sources */,
+				FA2403A01BF5613800AD34E7 /* SwiftSpinner.swift in Sources */,
+				FA352B841BEFED2000FF4C60 /* DateTimeExtensions.swift in Sources */,
+				FA352B771BEFEA7700FF4C60 /* DateTime.swift in Sources */,
 				FAD03FD81BDAAFEE00727F8F /* TVGridChannel.swift in Sources */,
+				FA352B801BEFEA7700FF4C60 /* Period.swift in Sources */,
+				FA6011261BED585D00698920 /* ArchiveChannel.swift in Sources */,
 				FA1B84AA1BD85E1900417B44 /* Functional.swift in Sources */,
 				5F87A8C41BCC772C00BD0D41 /* Functions.swift in Sources */,
+				FA352B811BEFEA7700FF4C60 /* Year.swift in Sources */,
 				FA1B84AB1BD85E1900417B44 /* JSON.swift in Sources */,
 				5FFB235E1BCAF9ED008EE818 /* VideoPlayer.swift in Sources */,
 				FA4563E31BD1966000B3B256 /* Diskcached.swift in Sources */,
 				FADA86C61BDAEDBD0049FD8D /* TVGridProgram.swift in Sources */,
 				FA1B84AD1BD85E1900417B44 /* NetworkClient.swift in Sources */,
+				FA352B7E1BEFEA7700FF4C60 /* LocalTime.swift in Sources */,
 				FA1B84AC1BD85E1900417B44 /* JSONDecodable.swift in Sources */,
+				FA352B821BEFEA7700FF4C60 /* Zone.swift in Sources */,
 				FA1B84AF1BD85E1900417B44 /* Result.swift in Sources */,
+				FABFB48C1BEEBC0D0064A832 /* AchiveChannelPrograms.swift in Sources */,
 				5F7382071BC890BE005CFE63 /* LoginViewController.swift in Sources */,
 				5F73820A1BC890BE005CFE63 /* appleBRTV.xcdatamodeld in Sources */,
 				5F7382051BC890BE005CFE63 /* AppDelegate.swift in Sources */,
 				5F823EF11BCD954D00CDDA07 /* SettingsTableViewController.swift in Sources */,
 				FAE9CD3B1BD4B72100DA3C5A /* TVGridDataSource.swift in Sources */,
 				FA1B84AE1BD85E1900417B44 /* Response.swift in Sources */,
+				FA352B7F1BEFEA7700FF4C60 /* Month.swift in Sources */,
 				FAE129A01BE7F8020032AA51 /* LiveTVCollectionViewController.swift in Sources */,
 				FAEBC9BE1BD97E450076FA50 /* TVGrid.swift in Sources */,
 				FA4D99101BE82C1C0016D551 /* Log.swift in Sources */,
+				FA352B7C1BEFEA7700FF4C60 /* LocalDate.swift in Sources */,
+				FA970C151BED684C000CC390 /* AchiveChannelsRootController.swift in Sources */,
 				FABC54A01BD235C800855798 /* LiveProgramDetailsViewController.swift in Sources */,
 				FA4563E41BD1966000B3B256 /* ImageLoader.swift in Sources */,
+				FA352B7D1BEFEA7700FF4C60 /* LocalDateTime.swift in Sources */,
 				FA4D990D1BE7FEC70016D551 /* InfiniteHorizontalLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -494,10 +624,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA352B851BEFEFD000FF4C60 /* Clock.swift in Sources */,
+				FA352B861BEFEFD000FF4C60 /* DateTime.swift in Sources */,
+				FA352B871BEFEFD000FF4C60 /* DateTimeError.swift in Sources */,
+				FA352B881BEFEFD000FF4C60 /* DayOfWeek.swift in Sources */,
+				FA352B891BEFEFD000FF4C60 /* Duration.swift in Sources */,
+				FA352B8A1BEFEFD000FF4C60 /* Instant.swift in Sources */,
+				FA352B8B1BEFEFD000FF4C60 /* LocalDate.swift in Sources */,
+				FA352B8C1BEFEFD000FF4C60 /* LocalDateTime.swift in Sources */,
+				FA352B8D1BEFEFD000FF4C60 /* LocalTime.swift in Sources */,
+				FA352B8E1BEFEFD000FF4C60 /* Month.swift in Sources */,
+				FA352B8F1BEFEFD000FF4C60 /* Period.swift in Sources */,
+				FA352B901BEFEFD000FF4C60 /* Year.swift in Sources */,
+				FA352B911BEFEFD000FF4C60 /* Zone.swift in Sources */,
+				FA352B921BEFEFD000FF4C60 /* DateTimeExtensions.swift in Sources */,
+				FA4CD6421BED490B00578BFB /* Log.swift in Sources */,
 				FA55993A1BDACED0007B357A /* TVGridChannel.swift in Sources */,
 				FAEABE171BD9A6D300C13657 /* TVGrid.swift in Sources */,
 				FAEABE101BD9A6AC00C13657 /* BRTVResponseObject.swift in Sources */,
+				FA6011271BED585D00698920 /* ArchiveChannel.swift in Sources */,
 				FAEABE111BD9A6AC00C13657 /* Functional.swift in Sources */,
+				FABFB48D1BEEBC0D0064A832 /* AchiveChannelPrograms.swift in Sources */,
 				FAEABE121BD9A6AC00C13657 /* JSON.swift in Sources */,
 				FADA86C71BDAEDBD0049FD8D /* TVGridProgram.swift in Sources */,
 				FAEABE131BD9A6AC00C13657 /* JSONDecodable.swift in Sources */,
@@ -508,6 +655,7 @@
 				5F7382331BC890CF005CFE63 /* BRTVAPITests.swift in Sources */,
 				FAE5D2AF1BD821CF00C9FD1F /* TVGridDataSource.swift in Sources */,
 				FAEABE0F1BD9A69B00C13657 /* ClientAppSettings.swift in Sources */,
+				FA6011241BED4D7600698920 /* TVArchiveDataSource.swift in Sources */,
 				FA492E6B1BED1F7000D1901B /* NSDateOperators.swift in Sources */,
 				FAE5D2B01BD8221B00C9FD1F /* NSDate+Compomets.swift in Sources */,
 			);
@@ -518,7 +666,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAE129A11BE7F8020032AA51 /* LiveTVCollectionViewController.swift in Sources */,
+				FA970C161BED684C000CC390 /* AchiveChannelsRootController.swift in Sources */,
+				FACB12161BED800C00994DA7 /* AchiveChannelProgramsController.swift in Sources */,
 				5F7382251BC890BE005CFE63 /* appleBRTVUITests.swift in Sources */,
+				FA4CD6411BED3D2500578BFB /* ArchiveSplitViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -609,6 +760,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -631,6 +783,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = appleBRTV/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = uk.co.motionly.appleBRTV;
@@ -644,6 +800,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = appleBRTV/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = uk.co.motionly.appleBRTV;
@@ -654,6 +814,10 @@
 		5F73822D1BC890BE005CFE63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = appleBRTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = uk.co.motionly.appleBRTVTests;
@@ -664,6 +828,10 @@
 		5F73822E1BC890BE005CFE63 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = appleBRTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = uk.co.motionly.appleBRTVTests;

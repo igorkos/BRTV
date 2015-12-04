@@ -30,7 +30,9 @@ class ClientAppSettings : JSONDecodable{
                 _JSONObject(d["clientCredentials"])
         }
     }
-    
+    static func arrayKey() ->String{
+        return ""
+    }
     //MARK: properies
     lazy var  sessionID : String = {
         let id :String = self.clientCredentials!["sessionID"] as! String
