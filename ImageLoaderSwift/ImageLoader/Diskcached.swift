@@ -15,38 +15,38 @@ extension String {
 
         let str = CFURLCreateStringByAddingPercentEscapes(
             kCFAllocatorDefault,
-            self,
+            self as CFString!,
             nil,
-            "!*'\"();:@&=+$,/?%#[]% ",
-            CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding))
+            "!*'\"();:@&=+$,/?%#[]% " as CFString!,
+            CFStringConvertNSStringEncodingToEncoding(String.Encoding.utf8.rawValue))
 
-        return str as String
+        return str as! String
     }
 }
 
 class Diskcached {
 
-    private var images = [NSURL: UIImage]()
+    fileprivate var images = [URL: UIImage]()
 
     class Directory {
         init() {
             createDirectory()
         }
 
-        private func createDirectory() {
-            let fileManager = NSFileManager.defaultManager()
-            if fileManager.fileExistsAtPath(path) {
+        fileprivate func createDirectory() {
+            let fileManager = FileManager.default
+            if fileManager.fileExists(atPath: path) {
                 return
             }
 
             do {
-                try fileManager.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil)
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
             } catch _ {
             }
         }
 
         var path: String {
-            let cacheDirectory = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)[0]
+            let cacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
             let directoryName = "swift.imageloader.diskcached"
 
             return cacheDirectory + "/" + directoryName
@@ -54,45 +54,45 @@ class Diskcached {
     }
     let directory = Directory()
 
-    private let _set_queue = dispatch_queue_create("swift.imageloader.queues.diskcached.set", DISPATCH_QUEUE_SERIAL)
-    private let _subscript_queue = dispatch_queue_create("swift.imageloader.queues.diskcached.subscript", DISPATCH_QUEUE_CONCURRENT)
+    fileprivate let _set_queue = DispatchQueue(label: "swift.imageloader.queues.diskcached.set", attributes: [])
+    fileprivate let _subscript_queue = DispatchQueue(label: "swift.imageloader.queues.diskcached.subscript", attributes: DispatchQueue.Attributes.concurrent)
 }
 
 // MARK: accessor
 
 extension Diskcached {
 
-    private func objectForKey(aKey: NSURL) -> UIImage? {
+    fileprivate func objectForKey(_ aKey: URL) -> UIImage? {
 
         if let image = images[aKey] {
             return image
         }
 
-        if let data = NSData(contentsOfFile: _path(aKey.absoluteString)) {
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: _path(aKey.absoluteString))) {
             return UIImage(data: data)
         }
 
         return nil
     }
 
-    private func _path(name: String) -> String {
+    fileprivate func _path(_ name: String) -> String {
         return directory.path + "/" + name.escape()
     }
 
-    private func setObject(anObject: UIImage, forKey aKey: NSURL) {
+    fileprivate func setObject(_ anObject: UIImage, forKey aKey: URL) {
 
         images[aKey] = anObject
 
         let block: () -> Void = {
 
             if let data = UIImageJPEGRepresentation(anObject, 1) {
-                data.writeToFile(self._path(aKey.absoluteString), atomically: false)
+                try? data.write(to: URL(fileURLWithPath: self._path(aKey.absoluteString)), options: [])
             }
 
             self.images[aKey] = nil
         }
 
-        dispatch_async(_set_queue, block)
+        _set_queue.async(execute: block)
     }
 }
 
@@ -100,11 +100,11 @@ extension Diskcached {
 
 extension Diskcached: ImageCache {
 
-    subscript (aKey: NSURL) -> UIImage? {
+    subscript (aKey: URL) -> UIImage? {
 
         get {
             var value : UIImage?
-            dispatch_sync(_subscript_queue) {
+            _subscript_queue.sync {
                 value = self.objectForKey(aKey)
             }
 
@@ -112,9 +112,9 @@ extension Diskcached: ImageCache {
         }
 
         set {
-            dispatch_barrier_async(_subscript_queue) {
+            _subscript_queue.async(flags: .barrier, execute: {
                 self.setObject(newValue!, forKey: aKey)
-            }
+            }) 
         }
     }
 }

@@ -7,20 +7,20 @@
 //
 
 import UIKit
-extension NSDate{
+extension Date{
     func toLogString() -> String {
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
-        let timeString = formatter.stringFromDate(self)
+        let timeString = formatter.string(from: self)
         return timeString
     }
 }
-public class Log {
-    class func d(message: String,
-       let functionName:  String = __FUNCTION__, fileNameWithPath: String = __FILE__, lineNumber: Int = __LINE__ ) {
-            let fpath = NSURL(fileURLWithPath: fileNameWithPath).URLByDeletingPathExtension
+open class Log {
+    class func d(_ message: String,
+       functionName:  String = #function, fileNameWithPath: String = #file, lineNumber: Int = #line ) {
+            let fpath = NSURL(fileURLWithPath: fileNameWithPath).deletingPathExtension
             let fileNameWithoutPath = fpath!.lastPathComponent
-            let output = "\(NSDate().toLogString()) \(fileNameWithoutPath!)(\(lineNumber)) \(functionName) :  \(message)"
+            let output = "\(Date().toLogString()) \(fileNameWithoutPath)(\(lineNumber)) \(functionName) :  \(message)"
             print(output)
     }
 }

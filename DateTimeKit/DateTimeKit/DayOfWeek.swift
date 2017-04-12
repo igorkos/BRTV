@@ -13,7 +13,7 @@ import Foundation
 A simple enumeration to represent the day of the week.
 */
 public enum DayOfWeek : Int {
-	case Monday = 1, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+	case monday = 1, tuesday, wednesday, thursday, friday, saturday, sunday
 	
 	/**
 	Returns the name of the day given a specific locale. For example, for the `Friday` enum value, 
@@ -22,15 +22,15 @@ public enum DayOfWeek : Int {
 	- parameter The: locale to use. Defaults to user's current locale.
 	- returns: The locale-specific representation of the day's name
 	*/
-	public func displayName(locale: NSLocale = NSLocale.autoupdatingCurrentLocale()) -> String {
+	public func displayName(_ locale: Locale = Locale.autoupdatingCurrent) -> String {
 		// note that we add 2 to the rawValue because the start of the ICU 
 		// week is Sunday, not Monday.
-		let formatter = NSDateFormatter()
+		let formatter = DateFormatter()
 		formatter.locale = locale
 		formatter.dateFormat = "e"
-		let date = formatter.dateFromString("\(self.rawValue+1)")
+		let date = formatter.date(from: "\(self.rawValue+1)")
 		formatter.dateFormat = "EEEE"
-		return formatter.stringFromDate(date!)
+		return formatter.string(from: date!)
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public enum DayOfWeek : Int {
 	- parameter The: number of days to add. May be negative, in which case it will be subtracted
 	- returns: The new day
 	*/
-	public func plus(days: Int) -> DayOfWeek {
+	public func plus(_ days: Int) -> DayOfWeek {
 		// * Moving forward 3 days is the same as 10 days and 17 days, so we modulo 7
 		//   to get the smallest number of equivalent days
 		// * Moving backwards by 3 days is the same as going forward by 4 days, so we add
@@ -58,7 +58,7 @@ public enum DayOfWeek : Int {
 	- parameter The: number of days to subtract. May be negative, in which case it will be added
 	- returns: The new day
 	*/
-	public func minus(days: Int) -> DayOfWeek {
+	public func minus(_ days: Int) -> DayOfWeek {
 		return plus(-(days % 7))
 	}
 }

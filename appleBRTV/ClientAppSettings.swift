@@ -7,8 +7,11 @@
 //
 
 import Foundation
+import Argo
+import Curry
+import Runes
 
-class ClientAppSettings : JSONDecodable{
+class ClientAppSettings {
     
     //MARK: JSON parsing
     var appSettings : Dictionary<String,AnyObject>?
@@ -19,16 +22,14 @@ class ClientAppSettings : JSONDecodable{
         self.clientCredentials = clientCredentials
     }
     
-    static func create(appSettings: Dictionary<String,AnyObject>)(clientCredentials: Dictionary<String,AnyObject>) -> ClientAppSettings {
+    static func create(_ appSettings: Dictionary<String,AnyObject>, _ clientCredentials: Dictionary<String,AnyObject>) -> ClientAppSettings? {
         return ClientAppSettings(appSettings:appSettings,clientCredentials: clientCredentials)
     }
     
-    static func decode(json: JSON) -> ClientAppSettings? {
-        return _JSONObject(json) >>> { d in
-            ClientAppSettings.create <^>
-                _JSONObject(d["appSettings"])    <*>
-                _JSONObject(d["clientCredentials"])
-        }
+    static func decode(_ json: JSON) -> Decoded<ClientAppSettings>? {
+        return curry(ClientAppSettings.init)
+            <^> json <| "appSettings"
+            <*> json <| "clientCredentials"
     }
     static func arrayKey() ->String{
         return ""

@@ -7,6 +7,30 @@
 //
 
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func <= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l <= r
+  default:
+    return !(rhs < lhs)
+  }
+}
+
 
 
 
@@ -19,12 +43,12 @@ class TVGridDataSource {
     static let sharedInstance = TVGridDataSource()
     weak var delegate : TVGridDataSourceDelegate?
     
-    private var tvGrid : TVGrid?
+    fileprivate var tvGrid : TVGrid?
     var tvGridStartTime: DateTime = DateTime(lastPeriodMark:30)
     var tvGridEndTime: DateTime = DateTime(lastPeriodMark:30) + GRID_TIME_AHEAD_SEC
     
     var tvGridRequestStartTime: DateTime = DateTime()
-    private var loading = false
+    fileprivate var loading = false
     
     func isNeedReload(){
         let nowTime = DateTime(lastPeriodMark:30)
@@ -36,7 +60,7 @@ class TVGridDataSource {
     func reloadGrid(){
         Log.d("")
         if self.delegate != nil {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.delegate!.controllerWillChangeContent(self)
             })
         }
@@ -57,7 +81,7 @@ class TVGridDataSource {
             tvGridRequestStartTime = from
             from = tvGridEndTime
             if self.delegate != nil {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.delegate!.controllerWillChangeContent(self)
                 })
             }
@@ -67,13 +91,13 @@ class TVGridDataSource {
         }
     }
     
-    private func loadTVGrid(start:DateTime, end:DateTime, page: Int){
+    fileprivate func loadTVGrid(_ start:DateTime, end:DateTime, page: Int){
         loading = true
-        BRTVAPI.sharedInstance.getClientTVGrid(start, end: end, page: page, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientTVGrid(start, end: end, page: page, completion: { (response: AnyObject?, error: Error?) in
                 guard let new_grid = response as? TVGrid else {
                     //Error
                     if self.delegate != nil{
-                        dispatch_async(dispatch_get_main_queue(), {
+                        DispatchQueue.main.async(execute: {
                             self.delegate!.tvGridDataSource(self, didGetError: error!)
                         })
                     }
@@ -87,7 +111,7 @@ class TVGridDataSource {
                 guard self.tvGrid != nil else {
                     self.tvGrid = new_grid
                     if self.delegate != nil{
-                        dispatch_async(dispatch_get_main_queue(), {
+                        DispatchQueue.main.async(execute: {
                             self.delegate!.tvGridDataSource(self, didChangeObjects:range)
                         })
                     }
@@ -101,7 +125,7 @@ class TVGridDataSource {
                 
                 if self.delegate != nil{
                     //Notify changed channels
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.delegate!.tvGridDataSource(self, didChangeObjects:range)
                     })
                 }
@@ -114,7 +138,7 @@ class TVGridDataSource {
                     //All loaded
                     self.loading = false
                     if self.delegate != nil{
-                        dispatch_async(dispatch_get_main_queue(), {
+                        DispatchQueue.main.async(execute: {
                             self.delegate!.controllerDidChangeContent(self)
                         })
                     }
@@ -142,9 +166,3 @@ class TVGridDataSource {
     }
 }
 
-protocol TVGridDataSourceDelegate : NSObjectProtocol{
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange)
-    func controllerWillChangeContent(tvGridDataSource: TVGridDataSource )
-    func controllerDidChangeContent(tvGridDataSource: TVGridDataSource )
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didGetError: ErrorType)
-}

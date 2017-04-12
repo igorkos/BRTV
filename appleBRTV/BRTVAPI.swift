@@ -20,21 +20,21 @@ enum BRTVAPIMethod : String
 }
 
 enum BRTVAPIImageType : Int{
-    case VODMain = 1, VODTumbnail = 3,
+    case vodMain = 1, vodTumbnail = 3,
     
-    ChanelLogoTransparent = 4, ChanelLogoWhite = 6, ChanelLogoEPGV1 = 7, ChanelLogoNameEPGV1 = 8,ChanelLogoEPGV2 = 9, ChanelLogoOriginal = 10,
+    chanelLogoTransparent = 4, chanelLogoWhite = 6, chanelLogoEPGV1 = 7, chanelLogoNameEPGV1 = 8,chanelLogoEPGV2 = 9, chanelLogoOriginal = 10,
     
-    TVProgram = 11, TVProgramMovie = 12, TVProgramPersonnel = 13, TVProgramEPG = 28,
+    tvProgram = 11, tvProgramMovie = 12, tvProgramPersonnel = 13, tvProgramEPG = 28,
     
-    DefaultImage = 14,
+    defaultImage = 14,
     
-    ArchiveStandartThumbnails = 16, ArchiveStbSmallThumbnails = 18,
+    archiveStandartThumbnails = 16, archiveStbSmallThumbnails = 18,
     
-    MovieStbCombined = 19
+    movieStbCombined = 19
   }
 
 enum MediaContentType : Int{
-    case Archive = 1, Live = 4
+    case archive = 1, live = 4
 }
 
 class BRTVAPI: NSObject {
@@ -42,60 +42,63 @@ class BRTVAPI: NSObject {
     static let sharedInstance = BRTVAPI()
     var applicationName = "IPHONE"
     var imageURLTemplate : String? = nil
-    private var serverURL = NSURL(string: "http://ivsmedia.iptv-distribution.net/Json")!
-    private let serviceSuffix = ".svc/json/"
-    private var sessionID: String? = nil
+    fileprivate var serverURL = URL(string: "http://ivsmedia.iptv-distribution.net/Json")!
+    fileprivate let serviceSuffix = ".svc/json/"
+    fileprivate var sessionID: String? = nil
     
     //TODO: load from user settings ( possible values from getMediaZoneInfo() call )
-    private var streamTimeZone = "EU_RST"
-    private var watchingZone = "NA_PST"
+    fileprivate var streamTimeZone = "EU_RST"
+    fileprivate var watchingZone = "NA_PST"
     
     
     // MARK: Login
-    func login(username: String, password: String, completion: APIResponseBlock)
+    func login(_ username: String, password: String, completion: @escaping APIResponseBlock)
     {
         
  
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.ClientService, method: .Login))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.ClientService, method: .Login))
         
         let data = ["cc": ["appSettings" : ["appName" : applicationName, "siteID" : 0, "settings" : []],
             "clientCredentials": ["UserLogin": username, "UserPassword" : password]]]
        
-        performRequest(request, jsonObject: data, result:ClientAppSettings.self, completion:{
-            (response: AnyObject?, error: ErrorType?) in
-            guard error == nil else {
-                return completion(response: nil, error: error)
+        performRequest(request, jsonObject: data as AnyObject?, result:ClientAppSettings.self, completion:{
+            (response: AnyObject?, error: Error?) in
+            if error != nil {
+                completion(nil, error)
             }
-            let settings = response as? ClientAppSettings
-            self.sessionID = settings!.sessionID
-            completion(response: response, error: error)
+            else{
+                let settings = response as? ClientAppSettings
+                self.sessionID = settings!.sessionID
+                completion(response, error)
+            }
+            
         })
     }
     
     
     // MARK: Channels
-    func getClientChannels(completion: APIResponseBlock)
+    func getClientChannels(_ completion: @escaping APIResponseBlock)
     {
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetClientChannels))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.ContentService, method: .GetClientChannels))
         
         if sessionID == nil
         {
-            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            completion(nil, NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
             return;
         }
         
-        let data = ["sessionID" : sessionID!, "request":["type":4]]
+        let data = ["sessionID" : sessionID!, "request":["type":4]] as [String : Any]
         
-        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
+        performRequest(request, jsonObject: data as AnyObject?, result:BRTVResponseObject.self, completion:completion)
     }
     
-    func getClientTVGrid(start: DateTime, end: DateTime, page:Int,  completion: APIResponseBlock)
+    func getClientTVGrid(_ start: DateTime, end: DateTime, page:Int,  completion: @escaping APIResponseBlock)
     {
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetTVGrid))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.ContentService, method: .GetTVGrid))
         
         if sessionID == nil
         {
-            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            completion(nil, NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
             return;
         }
         
@@ -108,55 +111,55 @@ class BRTVAPI: NSObject {
             "showDetails": true,
             "utcTime": true
             ]
-        ]
+        ] as [String : Any]
         
-        performRequest(request, jsonObject: data, result:TVGrid.self, completion:completion)
+        performRequest(request, jsonObject: data as AnyObject?, result:TVGrid.self, completion:completion)
     }
 
     // MARK: Archive
-    func getClientArchiveChannels(completion: APIResponseBlock)
+    func getClientArchiveChannels(_ completion: @escaping APIResponseBlock)
     {
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetClientChannels))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.ContentService, method: .GetClientChannels))
         
         if sessionID == nil
         {
-            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            completion(nil, NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
             return;
         }
         
-        let data = ["sessionID" : sessionID!, "request":["type":1]]
+        let data = ["sessionID" : sessionID!, "request":["type":1]] as [String : Any]
         
-        performRequest(request, jsonObject: data, result:BRTVResponseArrayObject<ArchiveChannel>.self, completion:completion)
+        performRequest(request, jsonObject: data as AnyObject?, result:BRTVResponseArrayObject<ArchiveChannel>.self, completion:completion)
     }
     
-    func getArchiveTimeSpan(channel: Int,completion: APIResponseBlock)
+    func getArchiveTimeSpan(_ channel: Int,completion: @escaping APIResponseBlock)
     {
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetArchiveTimeSpan))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.ContentService, method: .GetArchiveTimeSpan))
         
         let data = ["channelID" : channel]
         
-        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
+        performRequest(request, jsonObject: data as AnyObject?, result:BRTVResponseObject.self, completion:completion)
     }
     
-    func getArchiveProgramGuide(channel: Int,page:Int,completion: APIResponseBlock){
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.ContentService, method: .GetClientProgramGuide))
+    func getArchiveProgramGuide(_ channel: Int,page:Int,completion: @escaping APIResponseBlock){
+        let request = NSMutableURLRequest(url: getFullRequestURL(.ContentService, method: .GetClientProgramGuide))
         
         if sessionID == nil
         {
-            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            completion(nil, NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
             return;
         }
         
         let start = DateTime() - Duration(1200000)
         let end = DateTime() + Duration(86400)
       
-        let data = ["sessionID" : sessionID!,"type":MediaContentType.Archive.rawValue,
+        let data = ["sessionID" : sessionID!,"type":MediaContentType.archive.rawValue,
                 "request":[
-                    "type":MediaContentType.Archive.rawValue,
+                    "type":MediaContentType.archive.rawValue,
                     "filter":[
                         "DontFetchDetails": false,
                         "availableOnly": true,
-                        "contentType": MediaContentType.Archive.rawValue,
+                        "contentType": MediaContentType.archive.rawValue,
                         "visibleOnly": true,
                         "studioID": channel,
                         "date": start.toJsonDateString(),
@@ -170,19 +173,19 @@ class BRTVAPI: NSObject {
                     "watchingZone": streamTimeZone,
                     "utcTime": true
                 ]
-        ]
+        ] as [String : Any]
     
-        performRequest(request, jsonObject: data, result:AchiveChannelPrograms.self, completion:completion)
+        performRequest(request, jsonObject: data as AnyObject?, result:AchiveChannelPrograms.self, completion:completion)
     }
     
     // MARK: Stream URI
-    func getStreamURI(itemID: Int, type :MediaContentType, completion: APIResponseBlock)
+    func getStreamURI(_ itemID: Int, type :MediaContentType, completion: @escaping APIResponseBlock)
     {
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetClientStreamUri))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.MediaService, method: .GetClientStreamUri))
         
         if sessionID == nil
         {
-            completion(response: nil, error: NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
+            completion(nil, NSError(domain: "SessionID Error Domain", code: 400, userInfo: nil))
             return;
         }
         
@@ -195,62 +198,62 @@ class BRTVAPI: NSObject {
                 "qualityPreset" : 1,
                 "shiftTimeZoneName" : streamTimeZone
             ]
-            ]]
+            ]] as [String : Any]
         let callback = completion
-        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:{
-            (response: AnyObject?, error: ErrorType?) in
+        performRequest(request, jsonObject: data as AnyObject?, result:BRTVResponseObject.self, completion:{
+            (response: AnyObject?, error: Error?) in
             guard let result = response as? BRTVResponseObject else {
-                callback(response: nil, error: error)
+                callback(nil, error)
                 return
             }
-            callback(response: result.response, error: nil)
+            callback(result.response, nil)
         })
     }
     
     // MARK: Media image URI
-    func getMediaImageType(completion: APIResponseBlock)
+    func getMediaImageType(_ completion: @escaping APIResponseBlock)
     {
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetMediaImageTypes))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.MediaService, method: .GetMediaImageTypes))
         
-        let data = []
+        let data = [] as AnyObject
         
-        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
+        performRequest(request, jsonObject: data as AnyObject?, result:BRTVResponseObject.self, completion:completion)
     }
     
     //Seedup image loding in case if template is loaded from service
     
     
-    func getImageURIs(itemID: Int, mediaType : BRTVAPIImageType, index: Int,  completion: APIResponseBlock)
+    func getImageURIs(_ itemID: Int, mediaType : BRTVAPIImageType, index: Int,  completion: @escaping APIResponseBlock)
     {
         if self.imageURLTemplate != nil {
             var templateURL = self.imageURLTemplate
-            templateURL = templateURL!.stringByReplacingOccurrencesOfString("{0}", withString: "\(itemID)")
-            templateURL = templateURL!.stringByReplacingOccurrencesOfString("{1}", withString: "\(mediaType.rawValue)")
-            templateURL = templateURL!.stringByReplacingOccurrencesOfString("{2}", withString: "\(index)")
-            completion(response: templateURL, error: nil)
+            templateURL = templateURL!.replacingOccurrences(of: "{0}", with: "\(itemID)")
+            templateURL = templateURL!.replacingOccurrences(of: "{1}", with: "\(mediaType.rawValue)")
+            templateURL = templateURL!.replacingOccurrences(of: "{2}", with: "\(index)")
+            completion(templateURL as AnyObject?, nil)
             return
         }
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetImageUrl))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.MediaService, method: .GetImageUrl))
 
         let data = ["siteID" : 1]
         let callback = completion
         
-        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:{
-            (response: AnyObject?, error: ErrorType?) in
+        performRequest(request, jsonObject: data as AnyObject?, result:BRTVResponseObject.self, completion:{
+            (response: AnyObject?, error: Error?) in
             
             guard let result = response as? BRTVResponseObject else {
-                callback(response: nil, error: error)
+                callback(nil, error)
                 return
             }
             
             self.imageURLTemplate = result.response as? String
             guard var templateURL = self.imageURLTemplate else {
-                callback(response: nil, error: nil)
+                callback(nil, nil)
                 return
             }
             
-            templateURL = templateURL.stringByReplacingOccurrencesOfString("\\", withString: "")
-            templateURL = templateURL.stringByReplacingOccurrencesOfString("\"", withString: "")
+            templateURL = templateURL.replacingOccurrences(of: "\\", with: "")
+            templateURL = templateURL.replacingOccurrences(of: "\"", with: "")
             self.imageURLTemplate = templateURL
             
             //        http://hostname/ui/ImageHandler.ashx?e={0}&t={1}&n={2}
@@ -258,27 +261,27 @@ class BRTVAPI: NSObject {
             //        {1} - type id (use GetMediaImageTypes to get all possible image types)
             //        {2} - order number of an image for specified content item id and type. if omitted is always = 1
             
-            templateURL = templateURL.stringByReplacingOccurrencesOfString("{0}", withString: "\(itemID)")
-            templateURL = templateURL.stringByReplacingOccurrencesOfString("{1}", withString: "\(mediaType.rawValue)")
-            templateURL = templateURL.stringByReplacingOccurrencesOfString("{2}", withString: "\(index)")
-            callback(response: templateURL, error: nil)
+            templateURL = templateURL.replacingOccurrences(of: "{0}", with: "\(itemID)")
+            templateURL = templateURL.replacingOccurrences(of: "{1}", with: "\(mediaType.rawValue)")
+            templateURL = templateURL.replacingOccurrences(of: "{2}", with: "\(index)")
+            callback(templateURL as AnyObject?, nil)
         })
     }
 
-    func getMediaZoneInfo(completion: APIResponseBlock)
+    func getMediaZoneInfo(_ completion: @escaping APIResponseBlock)
     {
-        let request = NSMutableURLRequest(URL: getFullRequestURL(.MediaService, method: .GetMediaZoneInfo))
+        let request = NSMutableURLRequest(url: getFullRequestURL(.MediaService, method: .GetMediaZoneInfo))
         
-        let data = []
+        let data = [] as AnyObject
         
-        performRequest(request, jsonObject: data, result:BRTVResponseObject.self, completion:completion)
+        performRequest(request, jsonObject: data as AnyObject?, result:BRTVResponseObject.self, completion:completion)
     }
     
     
-    private func getFullRequestURL(service: BRTVAPIService, method: BRTVAPIMethod) -> NSURL
+    fileprivate func getFullRequestURL(_ service: BRTVAPIService, method: BRTVAPIMethod) -> URL
     {
         let fullURLStr = serverURL.absoluteString + service.rawValue + serviceSuffix + method.rawValue
-        return NSURL(string: fullURLStr)!
+        return URL(string: fullURLStr)!
     }
     
     

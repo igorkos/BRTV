@@ -1,24 +1,24 @@
 import Foundation
 
 enum Result<A> {
-    case Error(ErrorType)
-    case Value(A)
+    case error(Error)
+    case value(A)
 
-    init(_ error: ErrorType?, _ value: A) {
+    init(_ error: Error?, _ value: A) {
         if let err = error {
-            self = .Error(err)            
+            self = .error(err)            
         } else {
-            self = .Value(value)
+            self = .value(value)
         }
     }
 }
 
-func resultFromOptional<A>(optional: A?, error: NSError?) -> Result<A> {
+func resultFromOptional<A>(_ optional: A?, error: NSError?) -> Result<A> {
     if let a = optional {
-        return .Value(a)
+        return .value(a)
     } else {
         let err = error
-        return .Error(err!)
+        return .error(err!)
     }
 }
 

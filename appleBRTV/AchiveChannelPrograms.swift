@@ -7,35 +7,29 @@
 //
 
 import Foundation
+import Argo
+import Curry
+import Runes
 
-class AchiveChannelPrograms : JSONDecodable{
+class AchiveChannelPrograms {
     var paging : ItemPaging?
-    var programs : Array<TVGridProgram>? //List of TV programs
+    var programs : [TVGridProgram]? //List of TV programs
     
-    required init( programs : Array<TVGridProgram>?, paging : ItemPaging?){
+    required init( programs : [TVGridProgram], paging : ItemPaging?){
         self.paging = paging
         self.programs = programs
     }
     
-    static func create( paging : ItemPaging?)(programs : Array<TVGridProgram>?) -> AchiveChannelPrograms {
-        return AchiveChannelPrograms(programs : programs, paging : paging)
+    static func create( _ paging : ItemPaging?, _ programs : [TVGridProgram]?) -> AchiveChannelPrograms {
+        return AchiveChannelPrograms(programs : programs!, paging : paging)
     }
     
     static func arrayKey() ->String{
         return ""
     }
-    static func decode(json: JSON) -> AchiveChannelPrograms? {
-        return _JSONObject(json) >>> { d in
-            AchiveChannelPrograms.create <^>
-                ItemPaging.decode(_JSONObject(d["paging"])) <*>
-                _JSONArray(d["items"]) >>> { c in
-                    var array = Array<TVGridProgram>()
-                    for channelData in c {
-                        let channel = TVGridProgram.decode(channelData)
-                        array.append(channel!)
-                    }
-                    return array
-            }
-        }
+    static func decode(_ json: JSON) -> Decoded<AchiveChannelPrograms>? {
+        return curry(AchiveChannelPrograms.init)
+            <^> json <|| "programs"
+            <*> json <| "paging"
     }
 }

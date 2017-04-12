@@ -10,28 +10,28 @@ import Foundation
 
 extension DateTime {
     
-    public init?(input: String,zone: Zone = Zone.systemDefault(), error: DateTimeErrorPointer = nil){
-        let start = input.rangeOfString("Date(")!.endIndex
-        let end = input.rangeOfString(")")!.startIndex
-        let range = Range(start: start, end: end)
-        var dateString = input.substringWithRange(range)
+    public init?(input: String,zone: Zone = Zone.systemDefault(), error: DateTimeErrorPointer? = nil){
+        let start = input.range(of: "Date(")!.upperBound
+        let end = input.range(of: ")")!.lowerBound
+        let range = (start ..< end)
+        var dateString = input.substring(with: range)
         //-62135578800000-0500
         var timeZone = zone
         if dateString.characters.count > 14 {
             //time zone
-            let index = dateString.endIndex.advancedBy(-5)
-            let zoneString = dateString.substringFromIndex(index)
+            let index = dateString.characters.index(dateString.endIndex, offsetBy: -5)
+            let zoneString = dateString.substring(from: index)
             timeZone = Zone(zoneString)!
-            dateString = dateString.substringToIndex(index)
+            dateString = dateString.substring(to: index)
         }
-        let index = dateString.endIndex.advancedBy(-3)
-        dateString = dateString.substringToIndex(index)
+        let index = dateString.characters.index(dateString.endIndex, offsetBy: -3)
+        dateString = dateString.substring(to: index)
         var date: AnyObject?
-        date = NSDate(timeIntervalSince1970: Double(dateString)!)
-        self.init(Instant(date as! NSDate), timeZone)
+        date = Date(timeIntervalSince1970: Double(dateString)!) as AnyObject?
+        self.init(Instant(date as! Date), timeZone)
     }
     
-    public init(lastPeriodMark: Int,zone: Zone = Zone.systemDefault(), error: DateTimeErrorPointer = nil){
+    public init(lastPeriodMark: Int,zone: Zone = Zone.systemDefault(), error: DateTimeErrorPointer? = nil){
         var time = DateTime(Instant(),zone)
         let min = time.minute
         var diff : Double = Double(min % lastPeriodMark)
@@ -45,15 +45,15 @@ extension DateTime {
     
     public var milisecondsSince1970: Int { get { return self.secondsSince1970*1000 } }
     
-    func secondsSince1970(zone:Zone) -> Int{
+    func secondsSince1970(_ zone:Zone) -> Int{
         return self.secondsSince1970+zone.secondsFromUTC
     }
     
-    func milisecondsSince1970(zone:Zone) -> Int{
+    func milisecondsSince1970(_ zone:Zone) -> Int{
         return self.milisecondsSince1970+zone.secondsFromUTC*1000
     }
 
-    public func lastPeriodMark( mark : Int ) -> DateTime {
+    public func lastPeriodMark( _ mark : Int ) -> DateTime {
         let min = self.minute
         var diff : Double = Double(min % mark)
         diff = diff*60.0 + Double(self.second) + Double(self.millisecond)/100.0
@@ -84,18 +84,18 @@ public func - (lhs: DateTime, rhs: DateTime) -> Duration {
     return Duration(lhs.secondsSince1970 - rhs.secondsSince1970)
 }
 
-public func +=(inout lhs: DateTime, rhs: Int) -> DateTime {
+public func +=(lhs: inout DateTime, rhs: Int) -> DateTime {
     lhs = lhs + rhs
     return lhs
 }
 
-public func -=(inout lhs: DateTime, rhs: Int) -> DateTime {
+public func -=(lhs: inout DateTime, rhs: Int) -> DateTime {
     lhs = lhs - rhs
     return lhs
 }
 
 extension Zone {
     var secondsFromUTC : Int {
-        get { return timezone.secondsFromGMT }
+        get { return timezone.secondsFromGMT() }
     }
 }

@@ -7,8 +7,11 @@
 //
 
 import Foundation
+import Argo
+import Curry
+import Runes
 
-class BRTVResponseObject : JSONDecodable{
+class BRTVResponseObject{
     
     var response : AnyObject?
     //MARK: JSON parsing    
@@ -16,35 +19,38 @@ class BRTVResponseObject : JSONDecodable{
         self.response = response
     }
     
-    static func create(response:AnyObject?) -> BRTVResponseObject {
+    static func create(_ response:AnyObject?) -> BRTVResponseObject {
         return BRTVResponseObject(response:response)
     }
     
-    static func decode(json: JSON) -> BRTVResponseObject? {
-        return _JSONAnyObject(json) >>> { d in
-            BRTVResponseObject.create(d)
-        }
+    static func decode(_ json: JSON) -> Decoded<BRTVResponseObject>? {
+        return curry(BRTVResponseObject.init)
+            <^> json <| "response"
     }
+    
     static func arrayKey() ->String{
         return ""
     }
 }
 
-class BRTVResponseArrayObject<A:JSONDecodable> : JSONDecodable{
+class BRTVResponseArrayObject<A> {
     
     var response : Dictionary<String,AnyObject>?
-    var array : Array<A> = Array<A>()
+    var array : [A]
 
     //MARK: JSON parsing
     required init( response:AnyObject?){
         self.response = response as? Dictionary<String,AnyObject>
     }
     
-    static func create(response:AnyObject?) -> BRTVResponseArrayObject<A> {
+    static func create(_ response:AnyObject?) -> BRTVResponseArrayObject<A> {
         return BRTVResponseArrayObject<A>(response:response)
     }
     
-    static func decode(json: JSON) -> BRTVResponseArrayObject<A>? {
+    static func decode(_ json: JSON) -> Decoded<BRTVResponseArrayObject<A>>? {
+        return curry(BRTVResponseArrayObject.init)
+            <^> json <| "response"
+    /*
         return _JSONAnyObject(json) >>> { d in
             let object = BRTVResponseArrayObject<A>.create(d)
             let respArray = object.response![A.arrayKey()] as! Array<AnyObject>
@@ -53,7 +59,9 @@ class BRTVResponseArrayObject<A:JSONDecodable> : JSONDecodable{
                 object.array.append(item)
             }
             return object
+
         }
+  */
     }
     static func arrayKey() ->String{
         return ""

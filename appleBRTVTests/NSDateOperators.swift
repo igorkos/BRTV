@@ -21,9 +21,9 @@ class NSDateOperators: XCTestCase {
     }
 
     func test() {
-        let date2 = NSDate()
-        let date1 = NSDate(timeInterval: -30, sinceDate: date2)
-        let date3 = NSDate(timeInterval: 30, sinceDate: date2)
+        let date2 = Date()
+        let date1 = Date(timeInterval: -30, since: date2)
+        let date3 = Date(timeInterval: 30, since: date2)
         XCTAssertTrue(date3 > date2)
         XCTAssertTrue(date3 > date1)
         XCTAssertTrue(date2 > date1)
@@ -60,10 +60,10 @@ class NSDateOperators: XCTestCase {
         let end = now.inZone(Zone("Europe/Moscow")!)
         Log.d("now: \(now) zone: \(end)")
         
-        var date = NSDate(timeIntervalSince1970: Double(now.milisecondsSince1970))
+        var date = Date(timeIntervalSince1970: Double(now.milisecondsSince1970))
          Log.d("\(date)")
         
-        date = NSDate(timeIntervalSince1970: Double(end.milisecondsSince1970) + Double(zone.secondsFromUTC))
+        date = Date(timeIntervalSince1970: Double(end.milisecondsSince1970) + Double(zone.secondsFromUTC))
         Log.d("\(date)")
     }
 }

@@ -12,25 +12,25 @@ class TVArchiveDataSource {
     static let sharedInstance = TVArchiveDataSource()
     weak var delegate : TVArchiveDataSourceDelegate?
     
-    private var loading = false
-    private var archiveChannels : Array<ArchiveChannel>?
+    fileprivate var loading = false
+    fileprivate var archiveChannels : Array<ArchiveChannel>?
     //Load TVGrid from 1 hour back from now to 8 hour ahead
     func requestChannels(){
         Log.d("")
         if self.delegate != nil {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.delegate!.controllerWillChangeContent(self)
             })
         }
         loadArchiveChannels()
     }
     
-    private func loadArchiveChannels(){
+    fileprivate func loadArchiveChannels(){
         loading = true
-        BRTVAPI.sharedInstance.getClientArchiveChannels({ (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientArchiveChannels({ (response: AnyObject?, error: Error?) in
             self.archiveChannels = (response as? BRTVResponseArrayObject<ArchiveChannel>)?.array            
             if self.delegate != nil{
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.delegate!.controllerDidChangeContent(self)
                 })
             }
@@ -58,8 +58,8 @@ class TVArchiveDataSource {
 }
 
 protocol TVArchiveDataSourceDelegate : NSObjectProtocol{
-    func tvGridDataSource(tvGridDataSource: TVArchiveDataSource, didChangeObjects: NSRange)
-    func controllerWillChangeContent(tvGridDataSource: TVArchiveDataSource )
-    func controllerDidChangeContent(tvGridDataSource: TVArchiveDataSource )
-    func tvGridDataSource(tvGridDataSource: TVArchiveDataSource, didGetError: ErrorType)
+    func tvGridDataSource(_ tvGridDataSource: TVArchiveDataSource, didChangeObjects: NSRange)
+    func controllerWillChangeContent(_ tvGridDataSource: TVArchiveDataSource )
+    func controllerDidChangeContent(_ tvGridDataSource: TVArchiveDataSource )
+    func tvGridDataSource(_ tvGridDataSource: TVArchiveDataSource, didGetError: Error)
 }

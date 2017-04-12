@@ -12,7 +12,7 @@ class LiveTVGridViewCell: UICollectionViewCell {
     @IBOutlet var title : UILabel? = nil
     @IBOutlet var subtitle : UILabel? = nil
     var programData: TVGridProgram? = nil
-    var indexPath : NSIndexPath? = nil;
+    var indexPath : IndexPath? = nil;
     override func layoutSubviews(){
         super.layoutSubviews()
         if programData != nil {
@@ -23,7 +23,7 @@ class LiveTVGridViewCell: UICollectionViewCell {
     
     override func prepareForReuse(){
         super.prepareForReuse()
-        self.backgroundColor = UIColor.whiteColor()
+        self.backgroundColor = UIColor.white
     }
 }
 
@@ -31,7 +31,7 @@ class LiveTVTimeGridViewCell: UICollectionViewCell {
     @IBOutlet var title : UILabel? = nil
     override func layoutSubviews(){
         super.layoutSubviews()
-        superview!.bringSubviewToFront(self)
+        superview!.bringSubview(toFront: self)
     }
 }
 
@@ -39,6 +39,6 @@ class LiveTVGridChannelIconView: UICollectionReusableView {
     @IBOutlet var icon : UIImageView? = nil
     override func layoutSubviews(){
         super.layoutSubviews()
-        superview!.bringSubviewToFront(self)
+        superview!.bringSubview(toFront: self)
     }
 }

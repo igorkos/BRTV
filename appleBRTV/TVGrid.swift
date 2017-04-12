@@ -7,89 +7,49 @@
 //
 
 import Foundation
+import Argo
+import Curry
+import Runes
 
 //MARK: operators
 func += (left: TVGrid, right: TVGrid) -> TVGrid {
     var startIndex = (right.page - 1)*(right.paging?.itemsOnPage)!
     let endIndex = startIndex + right.count
     if (left.chanels?.count)! < endIndex {
-       left.chanels?.appendContentsOf(right.chanels!)
+       left.chanels?.append(contentsOf: right.chanels!)
        left.paging?.pageNumber = right.page
     }
     else{
         for channel in right.chanels! {
-            left[startIndex++]! += channel
+            left[startIndex]! += channel
+            startIndex += 1
         }
         left.paging?.pageNumber = right.page
     }
     return left
 }
 
-class ItemPaging : JSONDecodable{
-    var itemsOnPage : Int //Desired number of items per page
-    var pageNumber  : Int//Requested page number.
-    var totalItems : Int//Total number of items
-    var totalPages : Int//Total number of pages
-    
+class TVGrid {
     
     //MARK: JSON parsing
-    required init( itemsOnPage : Int, pageNumber  : Int,totalItems : Int,totalPages : Int){
-        self.itemsOnPage = itemsOnPage
-        self.pageNumber = pageNumber
-        self.totalItems = totalItems
-        self.totalPages = totalPages
-    }
-    
-    static func create(itemsOnPage : Int)(pageNumber  : Int)(totalItems : Int)(totalPages : Int) -> ItemPaging {
-        return ItemPaging(itemsOnPage: itemsOnPage, pageNumber: pageNumber,totalItems: totalItems,totalPages: totalPages)
-    }
-    
-    static func decode(json: JSON) -> ItemPaging? {
-        return _JSONObject(json) >>> { d in
-            ItemPaging.create <^>
-                _JSONInt(d["itemsOnPage"]) <*>
-                _JSONInt(d["pageNumber"]) <*>
-                _JSONInt(d["totalItems"]) <*>
-                _JSONInt(d["totalPages"])
-        }
-
-    }
-    
-    static func arrayKey() ->String{
-        return ""
-    }
-}
-
-
-class TVGrid : JSONDecodable{
-    
-    //MARK: JSON parsing
-    var chanels : Array<TVGridChannel>?
+    var chanels : [TVGridChannel]?
     var paging :  ItemPaging?
     
-    required init(paging :  ItemPaging?,chanels : Array<TVGridChannel>?){
+    required init(paging :  ItemPaging?,chanels : [TVGridChannel]?){
         self.chanels = chanels
         self.paging = paging
     }
     
-    static func create(paging :  ItemPaging?)(chanels : Array<TVGridChannel>?) -> TVGrid {
+    static func create(_ paging :  ItemPaging?, _ chanels : [TVGridChannel]?) -> TVGrid {
         return TVGrid(paging:paging,chanels:chanels)
     }
     
-    static func decode(json: JSON) -> TVGrid? {
-        return _JSONObject(json) >>> { d in
-            TVGrid.create <^>
-                ItemPaging.decode(_JSONObject(d["paging"])) <*>
-                _JSONArray(d["grid"]) >>> { c in
-                    var array = Array<TVGridChannel>()
-                    for channelData in c {
-                        let channel = TVGridChannel.decode(channelData)
-                        array.append(channel!)
-                    }
-                    return array
-                }
-        }
+    static func decode(_ json: JSON) -> Decoded<TVGrid>? {
+        return curry( TVGrid.init )
+            <^> json <| "paging"
+            <*> json <|| "chanels"
     }
+
     static func arrayKey() ->String{
         return ""
     }
@@ -105,19 +65,19 @@ class TVGrid : JSONDecodable{
     
     var page : Int {
         get{
-            guard paging != nil else {
+            guard let page = paging else {
                 return 0
             }
-            return paging!.pageNumber
+            return page!.pageNumber
         }
     }
     
     var totalPages : Int {
         get{
-            guard paging != nil else {
+            guard let page = paging else {
                 return 0
             }
-            return paging!.totalPages
+            return page!.totalPages
         }
     }
     
@@ -138,7 +98,7 @@ class TVGrid : JSONDecodable{
         }
     }
     
-    func remove( time: DateTime){
+    func remove( _ time: DateTime){
         for chanel in chanels! {
             chanel.remove(time)
         }

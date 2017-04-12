@@ -18,7 +18,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var usernameTextField: UITextField!
     var completion: (()->())? = nil
     
-    @IBAction func login(sender: AnyObject) {
+    @IBAction func login(_ sender: AnyObject) {
         
         
         if loginDetailsEntered(true) == false
@@ -27,21 +27,21 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         
         BRTVAPI.sharedInstance.login(usernameTextField.text!, password: passwordTextField.text!, completion: {
-            [weak self](response: AnyObject?, error: ErrorType?) in
+            [weak self](response: AnyObject?, error: Error?) in
             
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 if (error != nil)
                 {
-                    let alert = UIAlertController(title: "Failed to login", message: "Please check you login details and try again", preferredStyle: .Alert)
-                    alert.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-                    self?.presentViewController(alert, animated: true, completion: nil)
+                    let alert = UIAlertController(title: "Failed to login", message: "Please check you login details and try again", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+                    self?.present(alert, animated: true, completion: nil)
                 }
                 else
                 {
                     if self != nil
                     {
-                        let cred = NSURLCredential(user: self!.usernameTextField.text!, password: self!.passwordTextField.text!, persistence: .Permanent)
-                        NSURLCredentialStorage.sharedCredentialStorage().setCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
+                        let cred = URLCredential(user: self!.usernameTextField.text!, password: self!.passwordTextField.text!, persistence: .permanent)
+                        URLCredentialStorage.shared.set(cred, for: Functions.getUrlProtectionSpace())
                         
                         if self!.completion != nil
                         {
@@ -73,14 +73,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     // MARK: Helpers
-    func loginDetailsEntered(showAlert: Bool) -> Bool
+    func loginDetailsEntered(_ showAlert: Bool) -> Bool
     {
         if  usernameTextField.text?.characters.count == 0 || passwordTextField.text?.characters.count == 0
         {
-            let alert = UIAlertController(title: "Attention!", message: "Please enter your username and password", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler:nil))
+            let alert = UIAlertController(title: "Attention!", message: "Please enter your username and password", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
             
-            presentViewController(alert, animated: true, completion: nil)
+            present(alert, animated: true, completion: nil)
             
             return false
         }
@@ -93,7 +93,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     
     // MARK: Text Field
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
         if textField == passwordTextField
         {

@@ -1,12 +1,12 @@
 import Foundation
 
 struct Response {
-    let data: NSData
+    let data: Data
     var statusCode: Int = 500
 
-    init(data: NSData, urlResponse: NSURLResponse) {
+    init(data: Data, urlResponse: URLResponse) {
         self.data = data
-        if let httpResponse = urlResponse as? NSHTTPURLResponse {
+        if let httpResponse = urlResponse as? HTTPURLResponse {
             statusCode = httpResponse.statusCode
         }
     }

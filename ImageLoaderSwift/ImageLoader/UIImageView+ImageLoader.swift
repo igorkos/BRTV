@@ -19,18 +19,18 @@ extension UIImageView {
 
     // MARK: - properties
 
-    private var URL: NSURL? {
+    fileprivate var URL: Foundation.URL? {
         get {
-            return objc_getAssociatedObject(self, &ImageLoaderURLKey) as? NSURL
+            return objc_getAssociatedObject(self, &ImageLoaderURLKey) as? Foundation.URL
         }
         set(newValue) {
             objc_setAssociatedObject(self, &ImageLoaderURLKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
-    private var block: AnyObject? {
+    fileprivate var block: AnyObject? {
         get {
-            return objc_getAssociatedObject(self, &ImageLoaderBlockKey)
+            return objc_getAssociatedObject(self, &ImageLoaderBlockKey) as AnyObject?
         }
         set(newValue) {
             objc_setAssociatedObject(self, &ImageLoaderBlockKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -38,19 +38,19 @@ extension UIImageView {
     }
 
     // MARK: - public
-    public func loadImage(URL: URLLiteralConvertible ){
+    public func loadImage(_ URL: URLLiteralConvertible ){
         load(URL, placeholder:nil, completionHandler:nil)
     }
     
-    public func load(URL: URLLiteralConvertible, placeholder: UIImage? = nil, completionHandler:CompletionHandler? = nil) {
+    public func load(_ URL: URLLiteralConvertible, placeholder: UIImage? = nil, completionHandler:CompletionHandler? = nil) {
         cancelLoading()
 
         if let placeholder = placeholder {
             image = placeholder
         }
 
-        self.URL = URL.imageLoaderURL
-        _load(URL.imageLoaderURL, completionHandler: completionHandler)
+        self.URL = URL.imageLoaderURL as URL
+        _load(URL.imageLoaderURL as URL, completionHandler: completionHandler)
     }
 
     public func cancelLoading() {
@@ -60,17 +60,17 @@ extension UIImageView {
     }
 
     // MARK: - private
-    private static let _requesting_queue = dispatch_queue_create("swift.imageloader.queues.requesting", DISPATCH_QUEUE_SERIAL)
+    fileprivate static let _requesting_queue = DispatchQueue(label: "swift.imageloader.queues.requesting", attributes: [])
 
-    private func _load(URL: NSURL, completionHandler: CompletionHandler?) {
+    fileprivate func _load(_ URL: Foundation.URL, completionHandler: CompletionHandler?) {
 
         let _completionHandler: CompletionHandler = { URL, image, error, cacheType in
 
-            dispatch_async(dispatch_get_main_queue()) { [weak self] in
+            DispatchQueue.main.async { [weak self] in
                 // requesting is success then set image
-                if let wSelf = self, let thisURL = wSelf.URL, let image = image where thisURL.isEqual(URL) {
+                if let wSelf = self, let thisURL = wSelf.URL, let image = image, (thisURL == URL as URL) {
                     if sharedInstance.automaticallyAdjustsSize {
-                        wSelf.image = image.adjusts(wSelf.frame.size, scale: UIScreen.mainScreen().scale)
+                        wSelf.image = image.adjusts(wSelf.frame.size, scale: UIScreen.main.scale)
                     } else {
                         wSelf.image = image
                     }
@@ -81,11 +81,11 @@ extension UIImageView {
 
         // caching
         if let image = sharedInstance.cache[URL] {
-            _completionHandler(URL, image, nil, .Cache)
+            _completionHandler(URL, image, nil, .cache)
             return
         }
 
-        dispatch_async(UIImageView._requesting_queue) {
+        UIImageView._requesting_queue.async {
             let block = Block(completionHandler: _completionHandler)
             sharedInstance.load(URL).appendBlock(block)
             self.block = block

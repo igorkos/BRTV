@@ -7,8 +7,25 @@
 //
 
 import Foundation
+import Argo
+import Curry
+import Runes
 
-class ArchiveChannel : JSONDecodable{
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+
+class ArchiveChannel {
     
     weak var delegate : ArchiveChannelDelegate?
     
@@ -34,38 +51,37 @@ class ArchiveChannel : JSONDecodable{
         self.UtcOffset = UtcOffset
     }
     
-    static func create(accessNum : Int)( advisory  : Int)(arX  : Int)( arY : Int)( id  : Int)( name : String?)( orderNum  : Int)(UtcOffset : Int) -> ArchiveChannel {
+    static func create(_ accessNum : Int,  _ advisory  : Int, _ arX  : Int,  _ arY : Int,  _ id  : Int,  _ name : String?,  _ orderNum  : Int, _ UtcOffset : Int) -> ArchiveChannel {
         return ArchiveChannel(accessNum : accessNum, advisory  : advisory, arX  : arX, arY : arY, id  : id, name : name, orderNum  : orderNum,UtcOffset: UtcOffset)
     }
     static func arrayKey() ->String{
         return "items"
     }
-    static func decode(json: JSON) -> ArchiveChannel? {
-        return  _JSONObject(json) >>> { d in
-            ArchiveChannel.create <^>
-                _JSONInt(d["accessNum"]) <*>
-                _JSONInt(d["advisory"]) <*>
-                _JSONInt(d["arX"]) <*>
-                _JSONInt(d["arY"]) <*>
-                _JSONInt(d["id"]) <*>
-                _JSONString(d["name"]) <*>
-                _JSONInt(d["orderNum"]) <*>
-                _JSONInt(d["UtcOffset"])
-        }
+    static func decode(_ json: JSON) -> Decoded<ArchiveChannel>? {
+        return curry(ArchiveChannel.init)
+            <^> json <| "accessNum"
+            <*> json <| "advisory"
+            <*> json <| "arX" // Use ? for parsing optional values
+            <*> json <| "arY" // Custom types that also conform to Decodable just work
+            <*> json <| "id" // Parse nested objects
+            <*> json <| "name" // parse arrays of objects
+            <*> json <| "orderNum" // parse arrays of objects
+            <*> json <| "UtcOffset" // parse arrays of objects
     }
-    private func loadPage(page:Int){
-        BRTVAPI.sharedInstance.getArchiveProgramGuide(self.id,page: page, completion: { (response: AnyObject?, error: ErrorType?) in
+    
+    fileprivate func loadPage(_ page:Int){
+        BRTVAPI.sharedInstance.getArchiveProgramGuide(self.id,page: page, completion: { (response: AnyObject?, error: Error?) in
             guard let res = response else{
                 Log.d("\(error)")
                 return
             }
             let channelProg = res as! AchiveChannelPrograms
-            self.programs?.appendContentsOf(channelProg.programs!)
+            self.programs?.append(contentsOf: channelProg.programs!)
             if channelProg.paging?.pageNumber < (channelProg.paging!.totalPages - 1){
                 self.loadPage(channelProg.paging!.pageNumber + 1)
                 return
             }
-            self.programs!.sortInPlace({
+            self.programs!.sort(by: {
                 $0.startTime > $1.startTime
             })
             
@@ -77,7 +93,7 @@ class ArchiveChannel : JSONDecodable{
                 }
                 else{
                     if last?.startTime.day != pr.startTime.day{
-                        section.sortInPlace({
+                        section.sort(by: {
                             $0.startTime < $1.startTime
                         })
                         self.programsSectioned.append(section)
@@ -89,7 +105,7 @@ class ArchiveChannel : JSONDecodable{
             }
             self.programsSectioned.append(section)
             if self.delegate != nil {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.delegate!.controllerDidChangeContent(self)
                 })
             }
@@ -99,20 +115,20 @@ class ArchiveChannel : JSONDecodable{
     func requestPrograms(){
         if programs == nil {
             if self.delegate != nil {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.delegate!.controllerWillChangeContent(self)
                 })
             }
             programs = []
-            BRTVAPI.sharedInstance.getArchiveTimeSpan(id,completion: { (response: AnyObject?, error: ErrorType?) in
+            BRTVAPI.sharedInstance.getArchiveTimeSpan(id,completion: { (response: AnyObject?, error: Error?) in
                 let span : BRTVResponseObject? = response as? BRTVResponseObject
-                Log.d("\(span?.response)")
+                Log.d("\(String(describing: span?.response))")
             })
             loadPage(0)
         }
         else{
             if self.delegate != nil {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.delegate!.controllerDidChangeContent(self)
                 })
             }
@@ -139,7 +155,7 @@ class ArchiveChannel : JSONDecodable{
 }
 
 protocol ArchiveChannelDelegate : NSObjectProtocol{
-    func controllerWillChangeContent(tvGridDataSource: ArchiveChannel )
-    func controllerDidChangeContent(tvGridDataSource: ArchiveChannel )
-    func tvGridDataSource(tvGridDataSource: ArchiveChannel, didGetError: ErrorType)
+    func controllerWillChangeContent(_ tvGridDataSource: ArchiveChannel )
+    func controllerDidChangeContent(_ tvGridDataSource: ArchiveChannel )
+    func tvGridDataSource(_ tvGridDataSource: ArchiveChannel, didGetError: Error)
 }

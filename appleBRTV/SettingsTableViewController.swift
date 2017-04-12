@@ -27,23 +27,23 @@ class SettingsTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return 1
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("RightDetail", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "RightDetail", for: indexPath)
 
         // Configure the cell...
         
-        if let credentials = NSURLCredentialStorage.sharedCredentialStorage().credentialsForProtectionSpace(Functions.getUrlProtectionSpace())
+        if let credentials = URLCredentialStorage.shared.credentials(for: Functions.getUrlProtectionSpace())
         {
             // try login
             let key = credentials.keys.first!
@@ -64,10 +64,10 @@ class SettingsTableViewController: UITableViewController {
     }
     
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // logout
-        NSNotificationCenter.defaultCenter().postNotificationName("logout", object: nil)
-        self.navigationController?.popToRootViewControllerAnimated(true)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "logout"), object: nil)
+        self.navigationController?.popToRootViewController(animated: true)
     }
 
     /*

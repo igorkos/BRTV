@@ -8,158 +8,158 @@
 
 import Foundation
 
-func >(first:NSDate,second:NSDate) -> Bool{
+func >(first:Date,second:Date) -> Bool{
     switch first.compare(second) {
-    case .OrderedAscending:
+    case .orderedAscending:
         return false
-    case .OrderedDescending:
+    case .orderedDescending:
         return true
-    case .OrderedSame:
+    case .orderedSame:
         return false
     }
 }
 
-func >=(first:NSDate,second:NSDate) -> Bool{
+func >=(first:Date,second:Date) -> Bool{
     switch first.compare(second) {
-    case .OrderedAscending:
+    case .orderedAscending:
         return false
-    case .OrderedDescending:
+    case .orderedDescending:
         return true
-    case .OrderedSame:
+    case .orderedSame:
         return true
     }
 }
 
-func <(first:NSDate,second:NSDate) -> Bool{
+func <(first:Date,second:Date) -> Bool{
     switch first.compare(second) {
-    case .OrderedAscending:
+    case .orderedAscending:
         return true
-    case .OrderedDescending:
+    case .orderedDescending:
         return false
-    case .OrderedSame:
+    case .orderedSame:
         return false
     }
 }
 
-func <=(first:NSDate,second:NSDate) -> Bool{
+func <=(first:Date,second:Date) -> Bool{
     switch first.compare(second) {
-    case .OrderedAscending:
+    case .orderedAscending:
         return true
-    case .OrderedDescending:
+    case .orderedDescending:
         return false
-    case .OrderedSame:
+    case .orderedSame:
         return true
     }
 }
 
-func ==(first:NSDate,second:NSDate) -> Bool{
+func ==(first:Date,second:Date) -> Bool{
     switch first.compare(second) {
-    case .OrderedAscending:
+    case .orderedAscending:
         return false
-    case .OrderedDescending:
+    case .orderedDescending:
         return false
-    case .OrderedSame:
+    case .orderedSame:
         return true
     }
 }
 
-func -(first:NSDate,second:NSDate) -> NSTimeInterval{
-    let sec = first.timeIntervalSinceDate(second)
+func -(first:Date,second:Date) -> TimeInterval{
+    let sec = first.timeIntervalSince(second)
     return sec
 }
 
-func +=( inout left:NSDate,right:NSTimeInterval) -> NSDate{
-    left = NSDate(timeInterval: right, sinceDate: left)
+func +=( left:inout Date,right:TimeInterval) -> Date{
+    left = Date(timeInterval: right, since: left)
     return left
 }
 
-func +( left:NSDate,right:NSTimeInterval) -> NSDate{
-    let date = NSDate(timeInterval: right, sinceDate: left)
+func +( left:Date,right:TimeInterval) -> Date{
+    let date = Date(timeInterval: right, since: left)
     return date
 }
 
 
-extension NSDate
+extension Date
 {
     //Get Hour
     func hour() -> Int
     {
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components(.Hour, fromDate: self)
+        let calendar = Calendar.current
+        let components = (calendar as NSCalendar).components(.hour, from: self)
         let hour = components.hour
-        return hour
+        return hour!
     }
 
     //Get day
     func day() -> Int
     {
-        let calendar = NSCalendar.currentCalendar()
-        let day = calendar.ordinalityOfUnit(.Day, inUnit: .Year, forDate: self)
+        let calendar = Calendar.current
+        let day = (calendar as NSCalendar).ordinality(of: .day, in: .year, for: self)
         return day
     }
     
     //Get year
     func year() -> Int
     {
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components(.Year, fromDate: self)
+        let calendar = Calendar.current
+        let components = (calendar as NSCalendar).components(.year, from: self)
         let year = components.year
-        return year
+        return year!
 
     }
 
     //Get Minute
     func minute() -> Int
     {
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components(.Minute, fromDate: self)
+        let calendar = Calendar.current
+        let components = (calendar as NSCalendar).components(.minute, from: self)
         let minute = components.minute
-        return minute
+        return minute!
     }
     
     //Get closest fraction
-    func closestTo(part: Int) -> NSDate
+    func closestTo(_ part: Int) -> Date
     {
         let min = self.minute()
         let over = min % part
-        return NSDate(timeInterval: Double(0-over*60), sinceDate: self)
+        return Date(timeInterval: Double(0-over*60), since: self)
     }
     
     //Get Short Time String
     func toShortTimeString() -> String
     {
-        let formatter = NSDateFormatter()
-        formatter.timeStyle = .ShortStyle
-        let timeString = formatter.stringFromDate(self)
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        let timeString = formatter.string(from: self)
         return timeString
     }
 
     func toDateString() -> String
     {
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "EEEE MM.dd"
-        let timeString = formatter.stringFromDate(self)
+        let timeString = formatter.string(from: self)
         return timeString
     }
 
     
     func toTimeString() -> String
     {
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        let timeString = formatter.stringFromDate(self)
+        let timeString = formatter.string(from: self)
         return timeString
     }
 
-    public convenience init( value : String ) {
+    public init( value : String ) {
         guard value.characters.count > 0 else{
             self.init()
             return
         }
-        let start = value.rangeOfString("Date(")!.endIndex
-        let end = value.rangeOfString(")")!.startIndex
-        let range = Range(start: start, end: end)
-        let sec = Double(value.substringWithRange(range))!/1000
+        let start = value.range(of: "Date(")!.upperBound
+        let end = value.range(of: ")")!.lowerBound
+        let range = (start ..< end)
+        let sec = Double(value.substring(with: range))!/1000
         self.init(timeIntervalSince1970: sec)
     }
     

@@ -29,13 +29,13 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
     
     func test_00_BRTVAPILogin()
     {
-        let expectation = expectationWithDescription("Connected to BRTV server")
+        let expectation = self.expectation(description: "Connected to BRTV server")
         
         let username = "igorkos"
         let password = "rutv12"
         
         BRTVAPI.sharedInstance.login(username, password: password, completion: {
-            (response: AnyObject?, error: ErrorType?) in
+            (response: AnyObject?, error: Error?) in
           
             XCTAssertNil(error, "There was an error returned by the API handler")
             
@@ -50,7 +50,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         })
 
         
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             
             XCTAssertNil(error, "Failed to connect to BRTV server")
             
@@ -61,9 +61,9 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
     
     func test_01_BRTVAPIGetChannels()
     {
-        let expectation = expectationWithDescription("Did get channels")
+        let expectation = self.expectation(description: "Did get channels")
         
-        BRTVAPI.sharedInstance.getClientChannels( { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientChannels( { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
            
@@ -75,7 +75,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
@@ -83,18 +83,18 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
    
     func test_02_BRTVAPIGetTVGrid()
     {
-        let expectation = expectationWithDescription("Did get tvgrid")
+        let expectation = self.expectation(description: "Did get tvgrid")
         let start = DateTime(lastPeriodMark:30)
         let end  = start + Duration(18000)
 
-        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is TVGrid, "Response format is incorrect")
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
@@ -102,16 +102,16 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
    
     func test_03_BRTVAPIGetArchiveChannels()
     {
-        let expectation = expectationWithDescription("Did get channels")
-        BRTVAPI.sharedInstance.getClientArchiveChannels( { (response: AnyObject?, error: ErrorType?) in
+        let expectation = self.expectation(description: "Did get channels")
+        BRTVAPI.sharedInstance.getClientArchiveChannels( { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is BRTVResponseArrayObject<ArchiveChannel>, "Response format is incorrect")
-            Log.d("\(response)")
+    //        Log.d("\(response)")
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
-        waitForExpectationsWithTimeout(300, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 300, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
@@ -119,23 +119,23 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
     func test_04_BRTVAPIGetArchiveChannelProgramms()
     {
         var archiveChannels : Array<ArchiveChannel>?
-        var expectation = expectationWithDescription("Did get channels")
-        BRTVAPI.sharedInstance.getClientArchiveChannels( { (response: AnyObject?, error: ErrorType?) in
+        var expectation = self.expectation(description: "Did get channels")
+        BRTVAPI.sharedInstance.getClientArchiveChannels( { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is BRTVResponseArrayObject<ArchiveChannel>, "Response format is incorrect")
-            Log.d("\(response)")
+        //    Log.d("\(response)")
             archiveChannels = (response as? BRTVResponseArrayObject<ArchiveChannel>)?.array
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
-        waitForExpectationsWithTimeout(300, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 300, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
 
-        expectation = expectationWithDescription("Did get channels")
+        expectation = self.expectation(description: "Did get channels")
         
-        BRTVAPI.sharedInstance.getArchiveProgramGuide(archiveChannels![0].id,page: 0,completion:  { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getArchiveProgramGuide(archiveChannels![0].id,page: 0,completion:  { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is AchiveChannelPrograms, "Response format is incorrect")
@@ -145,86 +145,86 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
     
     func test_05_BRTVAPIGetURI()
     {
-        let expectation = expectationWithDescription("did get uri")
+        let expectation = self.expectation(description: "did get uri")
         
-        BRTVAPI.sharedInstance.getStreamURI(1, type: .Live, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getStreamURI(1, type: .live, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is BRTVResponseObject, "Response format is incorrect")
             
-            let url =  (response as! BRTVResponseObject).response as! Dictionary<String,AnyObject>
+            let url =  response as! Dictionary<String,AnyObject>
             XCTAssertNotNil(url["URL"], "Response doesn't contain uri")
             expectation.fulfill()
         })
         
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
     
     func test_06_BRTVAPIGetImageURI()
     {
-        let expectation = expectationWithDescription("did get GetImageURI")
+        let expectation = self.expectation(description: "did get GetImageURI")
         
-        BRTVAPI.sharedInstance.getImageURIs(1, mediaType: .ChanelLogoTransparent, index: 1, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getImageURIs(1, mediaType: .chanelLogoTransparent, index: 1, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             expectation.fulfill()
         })
         
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
     
     func test_07_BRTVAPIgetMediaImageType()
     {
-        let expectation = expectationWithDescription("did get MediaImageType")
+        let expectation = self.expectation(description: "did get MediaImageType")
         
-        BRTVAPI.sharedInstance.getMediaImageType( { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getMediaImageType( { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             print("response: \(response!)")
             expectation.fulfill()
         })
         
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
     
     func test_08_BRTVAPIgetMediaZoneInfo()
     {
-        let expectation = expectationWithDescription("did get MediaZoneInfo")
+        let expectation = self.expectation(description: "did get MediaZoneInfo")
         
-        BRTVAPI.sharedInstance.getMediaZoneInfo( { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getMediaZoneInfo( { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             print("response: \(response!)")
             expectation.fulfill()
         })
         
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
     }
 
-    func loadGrid(page:Int) -> TVGrid?{
+    func loadGrid(_ page:Int) -> TVGrid?{
         
-        let expectation = expectationWithDescription("did get TVGridFullLoad")
+        let expectation = self.expectation(description: "did get TVGridFullLoad")
         
         let start = DateTime(lastPeriodMark:30)
         let end  = start + Duration(18000)
         var data : TVGrid? = nil
         
-        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: page, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: page, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is TVGrid, "Response format is incorrect")
@@ -232,7 +232,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
            // print(response)
             expectation.fulfill()
         })
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
         return data
@@ -243,7 +243,8 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
         var tvgrid : TVGrid? = nil
         var nextPage = 1
         repeat{
-            let response = loadGrid(nextPage++)
+            let response = loadGrid(nextPage)
+            nextPage += 1
             guard tvgrid != nil else{
                 tvgrid = response
                 continue
@@ -259,11 +260,11 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
     func test_10_BRTVAPIUpdateTVGrid()
     {
         var tvgrid : TVGrid? = nil
-        var expectation = expectationWithDescription("Did get tvgrid")
+        var expectation = self.expectation(description: "Did get tvgrid")
         var start = DateTime(lastPeriodMark:30)
         var end  = start + Duration(18000)
         
-        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is TVGrid, "Response format is incorrect")
@@ -271,16 +272,16 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
         
         let programsCount = tvgrid?.chanels![0].count
         
-        expectation = expectationWithDescription("Did get tvgrid")
+        expectation = self.expectation(description: "Did get tvgrid")
         start = end
         end = start + Duration(18000)
-        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is TVGrid, "Response format is incorrect")
@@ -288,7 +289,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             expectation.fulfill()
         })
         
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
         XCTAssertGreaterThanOrEqual((tvgrid?.chanels![0].count)!,programsCount!)
@@ -297,11 +298,11 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
     func test_11_BRTVAPITVGridDataSource()
     {
         var tvgrid : TVGrid? = nil
-        var expectation = expectationWithDescription("Did get tvgrid")
+        var expectation = self.expectation(description: "Did get tvgrid")
         var start = DateTime(lastPeriodMark:30)
         var end  = start + Duration(18000)
         
-        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is TVGrid, "Response format is incorrect")
@@ -309,16 +310,16 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             expectation.fulfill()
         })
         //"bd0320a5d0131fa3fe1899f7d1feef2d",
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
         
         let programsCount = tvgrid?.chanels![0].count
         
-        expectation = expectationWithDescription("Did get tvgrid")
+        expectation = self.expectation(description: "Did get tvgrid")
         start = end
         end = start + Duration(18000)
-        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: ErrorType?) in
+        BRTVAPI.sharedInstance.getClientTVGrid(start ,end: end ,page: 1, completion: { (response: AnyObject?, error: Error?) in
             XCTAssertNil(error, "There was an error returned by the API handler")
             XCTAssertNotNil(response, "Response object is nil")
             XCTAssert(response is TVGrid, "Response format is incorrect")
@@ -326,7 +327,7 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
             expectation.fulfill()
         })
         
-        waitForExpectationsWithTimeout(3000, handler: { (error: ErrorType?) in
+        waitForExpectations(timeout: 3000, handler: { (error: Error?) in
             XCTAssertNil(error, "Failed to connect to BRTV server")
         })
         XCTAssertGreaterThanOrEqual((tvgrid?.chanels![0].count)!,programsCount!)
@@ -337,16 +338,16 @@ class BRTVAPITests: XCTestCase , TVGridDataSourceDelegate{
     var expectationUpdateTVGrid : XCTestExpectation?
     
     
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
+    func tvGridDataSource(_ tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
         
     }
-    func controllerWillChangeContent(tvGridDataSource: TVGridDataSource ){
+    func controllerWillChangeContent(_ tvGridDataSource: TVGridDataSource ){
         
     }
-    func controllerDidChangeContent(tvGridDataSource: TVGridDataSource ){
+    func controllerDidChangeContent(_ tvGridDataSource: TVGridDataSource ){
         expectationUpdateTVGrid!.fulfill()
     }
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didGetError: ErrorType){
+    func tvGridDataSource(_ tvGridDataSource: TVGridDataSource, didGetError: Error){
         
     }
 

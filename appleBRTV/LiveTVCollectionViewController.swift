@@ -21,32 +21,35 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
         super.viewDidLoad()
         let size = self.collectionView?.frame.size
         minuteWidth = (size?.width)! / (8*30)
-        let nc = NSNotificationCenter.defaultCenter()
-        nc.addObserver(self, selector: "updateData", name:NotificationUpdateLayoutData, object: nil)
+        let nc = NotificationCenter.default
+        nc.addObserver(self, selector: #selector(LiveTVCollectionViewController.updateData), name:NSNotification.Name(rawValue: NotificationUpdateLayoutData), object: nil)
         collectionView!.remembersLastFocusedIndexPath = true
         
         tvGrid.delegate = self
         tvGrid.reloadGrid()        
     }
     
-    override func viewWillAppear(animated: Bool){
+    override func viewWillAppear(_ animated: Bool){
          tvGrid.updateGrid()
     }
     
+    func updateData(){
+        tvGrid.updateGrid()
+    }
     // MARK: - Navigation
     
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         switch  segue.identifier! {
         case "ShowProgramDetails":
-            let dest = segue.destinationViewController as! LiveProgramDetailsViewController
+            let dest = segue.destination as! LiveProgramDetailsViewController
             let cell = sender as! LiveTVGridViewCell
             dest.program = cell.programData
-            dest.contentType = .Live
-            let popOverPresentationController = segue.destinationViewController.popoverPresentationController
-            let index = NSIndexPath(forItem: 0, inSection: cell.indexPath!.section)
-            let view = collectionView?.supplementaryViewForElementKind(UICollectionElementKindSectionHeader, atIndexPath: index)
+            dest.contentType = .live
+            let popOverPresentationController = segue.destination.popoverPresentationController
+            let index = IndexPath(item: 0, section: cell.indexPath!.section)
+            let view = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: index)
             popOverPresentationController!.sourceRect  = view!.frame
             popOverPresentationController!.sourceView  = collectionView
         default: break
@@ -55,12 +58,12 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
     }
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return tvGrid.count
     }
 
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
             return  1000
         }
@@ -68,15 +71,15 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
         return channel!.count
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseTimeIdentifier, forIndexPath: indexPath) as! LiveTVTimeGridViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseTimeIdentifier, for: indexPath) as! LiveTVTimeGridViewCell
             let cellTime  = tvGrid.tvGridStartTime + (indexPath.item*30*60)
             cell.title?.text = cellTime.toShortString()
             return cell
         }
         else {
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! LiveTVGridViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! LiveTVGridViewCell
             let channel = tvGrid[indexPath.section]
             cell.programData = channel![indexPath.item]
             cell.indexPath = indexPath
@@ -84,65 +87,65 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
         }
     }
 
-    override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView{
-        let cell = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: reuseChannelIdentifier, forIndexPath: indexPath) as! LiveTVGridChannelIconView
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView{
+        let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: reuseChannelIdentifier, for: indexPath) as! LiveTVGridChannelIconView
         let channel = tvGrid[indexPath.section]
-        Functions.loadImage(channel!.id, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, imageView: cell.icon!)
+        Functions.loadImage(channel!.id, mediaType: BRTVAPIImageType.chanelLogoOriginal, index: 1, imageView: cell.icon!)
         return cell
     }
     
-    override func collectionView(collectionView: UICollectionView, canFocusItemAtIndexPath indexPath: NSIndexPath) -> Bool{
+    override func collectionView(_ collectionView: UICollectionView, canFocusItemAt indexPath: IndexPath) -> Bool{
         return true
     }
     
-    override func collectionView(collectionView: UICollectionView, shouldUpdateFocusInContext context: UICollectionViewFocusUpdateContext) -> Bool{
+    override func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool{
         return true
     }
     
-    override func collectionView(collectionView: UICollectionView, didUpdateFocusInContext context: UICollectionViewFocusUpdateContext, withAnimationCoordinator coordinator: UIFocusAnimationCoordinator){
+    override func collectionView(_ collectionView: UICollectionView, didUpdateFocusIn context: UICollectionViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator){
         if context.previouslyFocusedIndexPath != nil {
-            let cell = collectionView.cellForItemAtIndexPath(context.previouslyFocusedIndexPath!)
+            let cell = collectionView.cellForItem(at: context.previouslyFocusedIndexPath!)
             switch cell {
             case is LiveTVGridViewCell:
-                cell!.backgroundColor = UIColor.whiteColor()
+                cell!.backgroundColor = UIColor.white
             case is LiveTVTimeGridViewCell:
-                cell!.backgroundColor = UIColor.darkGrayColor()
+                cell!.backgroundColor = UIColor.darkGray
             default:
                 break
             }
 
         }
         if context.nextFocusedIndexPath != nil {
-            let  cell = collectionView.cellForItemAtIndexPath(context.nextFocusedIndexPath!)
+            let  cell = collectionView.cellForItem(at: context.nextFocusedIndexPath!)
             switch cell {
             case is LiveTVGridViewCell:
-                cell!.backgroundColor = UIColor.grayColor()
+                cell!.backgroundColor = UIColor.gray
             case is LiveTVTimeGridViewCell:
-                cell!.backgroundColor = UIColor.grayColor()
+                cell!.backgroundColor = UIColor.gray
             default:
                 break
             }
         }
     }
     
-    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath){
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath){
         
-        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        let cell = collectionView.cellForItem(at: indexPath)
         if cell is  LiveTVGridViewCell {
-            performSegueWithIdentifier("ShowProgramDetails", sender: cell)
+            performSegue(withIdentifier: "ShowProgramDetails", sender: cell)
         }
     }
 
     
     // MARK: - UICollectionViewFlowLayout
     
-    func randomNumber(range: Range<Int> = 1...6) -> Int {
-        let min = range.startIndex
-        let max = range.endIndex
+    func randomNumber(_ range: Range<Int> = 1..<7) -> Int {
+        let min = range.lowerBound
+        let max = range.upperBound
         return Int(arc4random_uniform(UInt32(max - min))) + min
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if indexPath.section == 0 {
             var size = self.collectionView?.frame.size
             size?.height = 50
@@ -158,26 +161,26 @@ class LiveTVCollectionViewController: UICollectionViewController , UICollectionV
         }
         let width = minuteWidth*CGFloat(lenght)
         // print("sizeForItem -> width=\(lenght)")
-        return CGSizeMake(width, 120)
+        return CGSize(width: width, height: 120)
    }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSizeMake( 120, 120)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize( width: 120, height: 120)
     }
     
     //MARK: - TVGridDataSourceDelegate
     var spinner : SwiftSpinner?
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
+    func tvGridDataSource(_ tvGridDataSource: TVGridDataSource, didChangeObjects: NSRange){
     }
-    func controllerWillChangeContent(tvGridDataSource: TVGridDataSource ){
+    func controllerWillChangeContent(_ tvGridDataSource: TVGridDataSource ){
         spinner = SwiftSpinner.show("Loading TV Programs...",toView: self.view)
     }
-    func controllerDidChangeContent(tvGridDataSource: TVGridDataSource ){
+    func controllerDidChangeContent(_ tvGridDataSource: TVGridDataSource ){
         (collectionView?.collectionViewLayout as! InfiniteHorizontalLayout).maxWith = 0
         collectionView?.reloadData()
         spinner?.hide()
     }
-    func tvGridDataSource(tvGridDataSource: TVGridDataSource, didGetError: ErrorType){
+    func tvGridDataSource(_ tvGridDataSource: TVGridDataSource, didGetError: Error){
         
     }
 

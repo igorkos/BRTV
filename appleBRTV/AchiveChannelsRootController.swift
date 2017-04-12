@@ -18,7 +18,7 @@ class ChannelTableViewCell: UITableViewCell {
         if channelData != nil {
             title?.text = channelData!.name
             icon?.image = nil
-            Functions.loadImage(channelData!.id, mediaType: BRTVAPIImageType.ChanelLogoOriginal, index: 1, imageView: icon!)
+            Functions.loadImage(channelData!.id, mediaType: BRTVAPIImageType.chanelLogoOriginal, index: 1, imageView: icon!)
         }
     }
 }
@@ -42,33 +42,33 @@ class AchiveChannelsRootController: UITableViewController, TVArchiveDataSourceDe
         // Dispose of any resources that can be recreated.
     }
     
-    func cellFroProgramId(channelID: Int) -> ChannelTableViewCell? {
+    func cellFroProgramId(_ channelID: Int) -> ChannelTableViewCell? {
         let index = tableView.indexPathForSelectedRow
-        let cell = tableView.cellForRowAtIndexPath(index!)  as! ChannelTableViewCell
+        let cell = tableView.cellForRow(at: index!)  as! ChannelTableViewCell
         return cell
     }
     // MARK: - Table view data source
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return archiveDataSource.count
     }
     
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("ChannelCell", forIndexPath: indexPath) as! ChannelTableViewCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ChannelCell", for: indexPath) as! ChannelTableViewCell
         let channel = archiveDataSource[indexPath.row]
         cell.channelData = channel
         return cell
     }
     
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let split = self.splitViewController as? ArchiveSplitViewController
         let detail = split?.detail
         detail?.channel = archiveDataSource[indexPath.row]
@@ -119,16 +119,16 @@ class AchiveChannelsRootController: UITableViewController, TVArchiveDataSourceDe
     }
     */
 
-    func tvGridDataSource(tvGridDataSource: TVArchiveDataSource, didChangeObjects: NSRange){
+    func tvGridDataSource(_ tvGridDataSource: TVArchiveDataSource, didChangeObjects: NSRange){
         
     }
-    func controllerWillChangeContent(tvGridDataSource: TVArchiveDataSource ){
+    func controllerWillChangeContent(_ tvGridDataSource: TVArchiveDataSource ){
         
     }
-    func controllerDidChangeContent(tvGridDataSource: TVArchiveDataSource ){
+    func controllerDidChangeContent(_ tvGridDataSource: TVArchiveDataSource ){
         tableView.reloadData()
     }
-    func tvGridDataSource(tvGridDataSource: TVArchiveDataSource, didGetError: ErrorType){
+    func tvGridDataSource(_ tvGridDataSource: TVArchiveDataSource, didGetError: Error){
         
     }
 }

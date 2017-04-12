@@ -17,8 +17,8 @@ It contains enough information to resolve to a specific `Instant` in the datetim
 commonly used to represent a date/time that a user perceives on their wall-clock in a specific timezone.
 */
 public struct DateTime {
-	private static let UNITS: NSCalendarUnit =
-		[NSCalendarUnit.Year, NSCalendarUnit.Month, NSCalendarUnit.Day, NSCalendarUnit.Hour, NSCalendarUnit.Minute, NSCalendarUnit.Second, NSCalendarUnit.Nanosecond]
+	fileprivate static let UNITS: NSCalendar.Unit =
+		[NSCalendar.Unit.year, NSCalendar.Unit.month, NSCalendar.Unit.day, NSCalendar.Unit.hour, NSCalendar.Unit.minute, NSCalendar.Unit.second, NSCalendar.Unit.nanosecond]
 
 	/** The wall-clock date/time component */
 	public let dateTime: LocalDateTime
@@ -47,8 +47,8 @@ public struct DateTime {
 	- parameter zone: The zone that this date/time is in
 	- parameter error: An error that will be populated if the initialiser fails
 	*/
-	public init?(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int, _ second: Int, _ millisecond: Int = 0, _ zone: Zone, _ error: DateTimeErrorPointer = nil) {
-		if let dateTime = LocalDateTime(year, month, day, hour, minute, second, millisecond, error) {
+	public init?(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int, _ second: Int, _ millisecond: Int = 0, _ zone: Zone, _ error: DateTimeErrorPointer? = nil) {
+		if let dateTime = LocalDateTime(year, month, day, hour, minute, second, millisecond, error!) {
 			self.init(dateTime, zone)
 		}
 		else {
@@ -66,21 +66,21 @@ public struct DateTime {
 	- parameter locale: The locale that will be used when parsing
 	- parameter error: An error that will be populated if the initialiser fails
 	*/
-	public init?(input: String, format: String, zone: Zone = Zone.systemDefault(), _ locale: NSLocale = NSLocale.autoupdatingCurrentLocale(), _ error: DateTimeErrorPointer = nil) {
-		let dateFormatter = NSDateFormatter()
+	public init?(input: String, format: String, zone: Zone = Zone.systemDefault(), _ locale: Locale = Locale.autoupdatingCurrent, _ error: DateTimeErrorPointer? = nil) {
+		let dateFormatter = DateFormatter()
 		dateFormatter.dateFormat = format
-		dateFormatter.timeZone = zone.timezone
+		dateFormatter.timeZone = zone.timezone as TimeZone!
 		dateFormatter.locale = locale
 		
 		var localError: NSError?
 		var date: AnyObject?
 		do {
-			try dateFormatter.getObjectValue(&date, forString: input, range: nil)
-			self.init(Instant(date as! NSDate), zone)
+			try dateFormatter.getObjectValue(&date, for: input, range: nil)
+			self.init(Instant(date as! Date), zone)
 		} catch let error1 as NSError {
 			localError = error1
 			if error != nil {
-				error.memory = DateTimeError.UnableToParseDate(localError!.localizedDescription)
+				error?.pointee = DateTimeError.unableToParseDate(localError!.localizedDescription)
 			}
 			return nil
 		}
@@ -109,10 +109,10 @@ public struct DateTime {
 	- parameter zone: The zone that is used to determine the wall-clock date and time
 	*/
 	public init(_ instant: Instant, _ zone: Zone) {
-		let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-		calendar.timeZone = zone.timezone
-		let components = calendar.components(DateTime.UNITS, fromDate: instant.asNSDate())
-		self.init(LocalDateTime(components.year, components.month, components.day, components.hour, components.minute, components.second, components.nanosecond/1_000_000)!, zone)
+		var calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+		calendar.timeZone = zone.timezone as TimeZone
+		let components = (calendar as NSCalendar).components(DateTime.UNITS, from: instant.asNSDate() as Date)
+		self.init(LocalDateTime(components.year!, components.month!, components.day!, components.hour!, components.minute!, components.second!, components.nanosecond!/1_000_000)!, zone)
 	}
 	
 	/**
@@ -130,8 +130,8 @@ public struct DateTime {
 	Returns an instant representing the specific moment in time for this object
 	*/
 	public func instant() -> Instant {
-		let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-		let components = NSDateComponents()
+		let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+		var components = DateComponents()
 		components.year = self.dateTime.date.year
 		components.month = self.dateTime.date.month
 		components.day = self.dateTime.date.day
@@ -139,11 +139,11 @@ public struct DateTime {
 		components.minute = self.dateTime.time.minute
 		components.second = self.dateTime.time.second
 		components.nanosecond = self.dateTime.time.millisecond * 1_000_000
-		components.timeZone = self.zone.timezone
+		(components as NSDateComponents).timeZone = self.zone.timezone as TimeZone
 		
 		// note that we can explicitly unwrap because we know the component inputs were
 		// valid inside the dateTime object
-		return Instant(calendar.dateFromComponents(components)!)
+		return Instant(calendar.date(from: components)!)
 	}
 	
 	/**
@@ -152,7 +152,7 @@ public struct DateTime {
 	- parameter zone: The zone to convert the current date/time to
 	- returns: A new `DateTime` object that represent this object's date/time in the new zone
 	*/
-	public func inZone(zone: Zone) -> DateTime {
+	public func inZone(_ zone: Zone) -> DateTime {
 		let instant = self.instant()
 		return DateTime(instant, zone)
 	}
@@ -167,7 +167,7 @@ public struct DateTime {
 	- parameter duration: The duration to be added
 	- returns: A new `DateTime` that represents the new moment in the datetime continuum
 	*/
-	public func plus(duration: Duration) -> DateTime {
+	public func plus(_ duration: Duration) -> DateTime {
 		return DateTime(instant() + duration, self.zone)
 	}
 	
@@ -181,7 +181,7 @@ public struct DateTime {
 	- parameter duration: The duration to be subtracted
 	- returns: A new `DateTime` that represents the new moment in the datetime continuum
 	*/
-	public func minus(duration: Duration) -> DateTime {
+	public func minus(_ duration: Duration) -> DateTime {
 		return DateTime(instant() - duration, self.zone)
 	}
 
@@ -193,7 +193,7 @@ public struct DateTime {
 	- parameter period: The period to be added
 	- returns: A new `DateTime` that represents the new dateTime
 	*/
-	public func plus(period: Period) -> DateTime {
+	public func plus(_ period: Period) -> DateTime {
 		return DateTime(LocalDateTime(self.dateTime.date + period, self.dateTime.time), self.zone)
 	}
 	
@@ -205,13 +205,13 @@ public struct DateTime {
 	- parameter period: The period to be subtracted
 	- returns: A new `DateTime` that represents the new dateTime
 	*/
-	public func minus(period: Period) -> DateTime {
+	public func minus(_ period: Period) -> DateTime {
 		return DateTime(LocalDateTime(self.dateTime.date - period, self.dateTime.time), self.zone)
 	}
 	
 	// MARK: - Extensions added re: joda-time API (intermediate changes, more to come)
 	
-	public func withYear(year: Int) -> DateTime {
+	public func withYear(_ year: Int) -> DateTime {
 		if let d = DateTime(year, self.month, self.day, self.hour, self.minute, self.second, self.millisecond, self.zone, nil) {
 			return d
 		} else {
@@ -219,7 +219,7 @@ public struct DateTime {
 		}
 	}
 	
-	public func withMonth(month: Int) -> DateTime {
+	public func withMonth(_ month: Int) -> DateTime {
 		if let d = DateTime(self.year, month, self.day, self.hour, self.minute, self.second, self.millisecond, self.zone, nil) {
 			return d
 		} else {
@@ -227,7 +227,7 @@ public struct DateTime {
 		}
 	}
 	
-	public func withDay(day: Int) -> DateTime {
+	public func withDay(_ day: Int) -> DateTime {
 		if let d = DateTime(self.year, self.month, day, self.hour, self.minute, self.second, self.millisecond, self.zone, nil) {
 			return d
 		} else {
@@ -235,7 +235,7 @@ public struct DateTime {
 		}
 	}
 	
-	public func withHour(hour: Int) -> DateTime {
+	public func withHour(_ hour: Int) -> DateTime {
 		if let d = DateTime(self.year, self.month, self.day, hour, self.minute, self.second, self.millisecond, self.zone, nil) {
 			return d
 		} else {
@@ -243,7 +243,7 @@ public struct DateTime {
 		}
 	}
 	
-	public func withMinute(minute: Int) -> DateTime {
+	public func withMinute(_ minute: Int) -> DateTime {
 		if let d = DateTime(self.year, self.month, self.day, self.hour, minute, self.second, self.millisecond, self.zone, nil) {
 			return d
 		} else {
@@ -251,7 +251,7 @@ public struct DateTime {
 		}
 	}
 	
-	public func withSecond(second: Int) -> DateTime {
+	public func withSecond(_ second: Int) -> DateTime {
 		if let d = DateTime(self.year, self.month, self.day, self.hour, self.minute, second, self.millisecond, self.zone, nil) {
 			return d
 		} else {
@@ -259,7 +259,7 @@ public struct DateTime {
 		}
 	}
 	
-	public func withMillisecond(millisecond: Int) -> DateTime {
+	public func withMillisecond(_ millisecond: Int) -> DateTime {
 		if let d = DateTime(self.year, self.month, self.day, self.hour, self.minute, self.second, millisecond, self.zone, nil) {
 			return d
 		} else {
@@ -267,7 +267,7 @@ public struct DateTime {
 		}
 	}
 	
-	public func withZone(zone: Zone) -> DateTime {
+	public func withZone(_ zone: Zone) -> DateTime {
 		if let d = DateTime(self.year, self.month, self.day, self.hour, self.minute, self.second, self.millisecond, zone, nil) {
 			return d
 		} else {

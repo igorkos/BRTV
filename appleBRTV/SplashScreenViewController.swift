@@ -16,7 +16,7 @@ class SplashScreenViewController: UIViewController {
         // Do any additional setup after loading the view.
 
         //check if logged in
-        if let credentials = NSURLCredentialStorage.sharedCredentialStorage().credentialsForProtectionSpace(Functions.getUrlProtectionSpace())
+        if let credentials = URLCredentialStorage.shared.credentials(for: Functions.getUrlProtectionSpace())
         {
             // try login
             let key = credentials.keys.first!
@@ -27,12 +27,12 @@ class SplashScreenViewController: UIViewController {
                 if cred.user != nil && cred.password != nil
                 {
                     BRTVAPI.sharedInstance.login(cred.user!, password: cred.password!, completion: {
-                        [weak self](response: AnyObject?, error: ErrorType?) in
+                        [weak self](response: AnyObject?, error: Error?) in
                         
-                        dispatch_async(dispatch_get_main_queue(), {
+                        DispatchQueue.main.async(execute: {
                             if (error != nil)
                             {
-                                NSURLCredentialStorage.sharedCredentialStorage().removeCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
+                                URLCredentialStorage.shared.remove(cred, for: Functions.getUrlProtectionSpace())
                                 self?.presentLoginPage()
                                 
                             }
@@ -56,20 +56,20 @@ class SplashScreenViewController: UIViewController {
         }
         
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("handleLogout"), name: "logout", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SplashScreenViewController.handleLogout), name: NSNotification.Name(rawValue: "logout"), object: nil)
     }
     
     func handleLogout()
     {
         
-        if let credentials = NSURLCredentialStorage.sharedCredentialStorage().credentialsForProtectionSpace(Functions.getUrlProtectionSpace())
+        if let credentials = URLCredentialStorage.shared.credentials(for: Functions.getUrlProtectionSpace())
         {
             // try login
             let key = credentials.keys.first!
             
             if let cred = credentials[key]
             {
-                NSURLCredentialStorage.sharedCredentialStorage().removeCredential(cred, forProtectionSpace: Functions.getUrlProtectionSpace())
+                URLCredentialStorage.shared.remove(cred, for: Functions.getUrlProtectionSpace())
             }
         }
         
@@ -80,7 +80,7 @@ class SplashScreenViewController: UIViewController {
     
     func presentLoginPage()
     {
-        if let login = self.storyboard?.instantiateViewControllerWithIdentifier("LoginViewController") as? LoginViewController
+        if let login = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
         {
             
             login.completion = { [weak self]() in
@@ -93,7 +93,7 @@ class SplashScreenViewController: UIViewController {
             self.addChildViewController(login)
             login.view.frame = self.view.bounds
             self.view.addSubview(login.view)
-            login.didMoveToParentViewController(self)
+            login.didMove(toParentViewController: self)
             
         }
         else
@@ -107,7 +107,7 @@ class SplashScreenViewController: UIViewController {
     {
         if let vc = self.childViewControllers.last
         {
-            vc.willMoveToParentViewController(nil)
+            vc.willMove(toParentViewController: nil)
             vc.view.removeFromSuperview()
             vc.removeFromParentViewController()
         }
@@ -116,13 +116,13 @@ class SplashScreenViewController: UIViewController {
     
     func presentHomePage()
     {
-        if let home = self.storyboard?.instantiateViewControllerWithIdentifier("HomeViewController")
+        if let home = self.storyboard?.instantiateViewController(withIdentifier: "HomeViewController")
         {
             
             self.addChildViewController(home)
             home.view.frame = self.view.bounds
             self.view.addSubview(home.view)
-            home.didMoveToParentViewController(self)
+            home.didMove(toParentViewController: self)
         }
         else
         {

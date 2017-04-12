@@ -49,18 +49,18 @@ class AchiveChannelProgramsController: UITableViewController, ArchiveChannelDele
     // MARK: - Navigation
     
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         switch  segue.identifier! {
         case "ShowProgramDetails":
-            let dest = segue.destinationViewController as! LiveProgramDetailsViewController
+            let dest = segue.destination as! LiveProgramDetailsViewController
             let cell = sender as! ProgramTableViewCell
             dest.program = cell.programData
-            dest.contentType = .Archive
+            dest.contentType = .archive
             let split = self.splitViewController as! ArchiveSplitViewController
             let master = split.master!
             let chCell = master.cellFroProgramId(cell.programData!.channelID)
-            let popOverPresentationController = segue.destinationViewController.popoverPresentationController
+            let popOverPresentationController = segue.destination.popoverPresentationController
             popOverPresentationController!.sourceRect  = (chCell?.frame)!
             popOverPresentationController!.sourceView  = master.tableView
         default: break
@@ -70,7 +70,7 @@ class AchiveChannelProgramsController: UITableViewController, ArchiveChannelDele
     
     // MARK: - Table view data source
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         guard let ch = channel else{
             return 0
@@ -78,7 +78,7 @@ class AchiveChannelProgramsController: UITableViewController, ArchiveChannelDele
         return ch.count
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         guard let ch = channel else{
             return 0
@@ -90,22 +90,22 @@ class AchiveChannelProgramsController: UITableViewController, ArchiveChannelDele
     }
     
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("ProgramCell", forIndexPath: indexPath) as! ProgramTableViewCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ProgramCell", for: indexPath) as! ProgramTableViewCell
         let program = channel![indexPath.section]![indexPath.row]
         cell.programData = program
         return cell
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String?{
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String?{
         let program = channel![section]![0]
         return program.startTime.toShortDateString()
     }
 
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath)
-        performSegueWithIdentifier("ShowProgramDetails", sender: cell)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath)
+        performSegue(withIdentifier: "ShowProgramDetails", sender: cell)
     }
     
     /*
@@ -153,15 +153,15 @@ class AchiveChannelProgramsController: UITableViewController, ArchiveChannelDele
     }
     */
     
-    func controllerWillChangeContent(tvGridDataSource: ArchiveChannel ){
+    func controllerWillChangeContent(_ tvGridDataSource: ArchiveChannel ){
         spinner?.hide()
         spinner = SwiftSpinner.show("Loading Achived Programs...",toView: self.tableView)
     }
-    func controllerDidChangeContent(tvGridDataSource: ArchiveChannel ){
+    func controllerDidChangeContent(_ tvGridDataSource: ArchiveChannel ){
         tableView.reloadData()
         spinner?.hide()
     }
-    func tvGridDataSource(tvGridDataSource: ArchiveChannel, didGetError: ErrorType){
+    func tvGridDataSource(_ tvGridDataSource: ArchiveChannel, didGetError: Error){
         
     }
 

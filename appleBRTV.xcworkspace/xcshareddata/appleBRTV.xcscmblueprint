@@ -9,7 +9,7 @@
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "4D59A42C-4309-40DB-A8A0-0717EE187627",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "01E5E6520E7A613477E24070E158C2C7AB946834" : "BRTV\/",
+    "01E5E6520E7A613477E24070E158C2C7AB946834" : "BRTV_Fork\/",
     "DE6A1EFD6A04C0738737A0053DADDA1F2C6DFFF4" : "BRTV\/ImageLoaderSwift\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "appleBRTV",

@@ -7,8 +7,11 @@
 //
 
 import Foundation
+import Argo
+import Curry
+import Runes
 
-class TVGridProgram : JSONDecodable{
+class TVGridProgram {
     
     var advisory : Int// Program advisory
     var bookmarked : Bool //true when user marked it as favorite. always false when recorded == false
@@ -66,27 +69,25 @@ class TVGridProgram : JSONDecodable{
 
     }
     
-    static func create(advisory : Int)(bookmarked : Bool)(description : String?)(id : Int)(imageCount : Int)(length : Int)(name : String)(recorded : Bool)(startOffset : Int)(startTime : String)(itemTime : String)(UtcOffset : Int)(channelID : Int) -> TVGridProgram {
+    static func create(_ advisory : Int, _ bookmarked : Bool, _ description : String?, _ id : Int, _ imageCount : Int, _ length : Int, _ name : String, _ recorded : Bool, _ startOffset : Int, _ startTime : String, _ itemTime : String, _ UtcOffset : Int, _ channelID : Int) -> TVGridProgram {
         return TVGridProgram(advisory : advisory,bookmarked : bookmarked,description : description,id : id,imageCount : imageCount,length : length,name : name,recorded : recorded,startOffset : startOffset,startTime : startTime,itemTime:itemTime,UtcOffset : UtcOffset,channelID : channelID)
     }
     
-    static func decode(json: JSON) -> TVGridProgram? {
-        return _JSONObject(json) >>> { d in
-            TVGridProgram.create <^>
-                _JSONInt(d["advisory"]) <*>
-                _JSONBool(d["bookmarked"]) <*>
-                _JSONString(d["description"]) <*>
-                _JSONInt(d["id"]) <*>
-                _JSONInt(d["imageCount"]) <*>
-                _JSONInt(d["length"]) <*>
-                _JSONString(d["name"]) <*>
-                _JSONBool(d["recorded"]) <*>
-                _JSONInt(d["startOffset"]) <*>
-                _JSONString(d["startTime"]) <*>
-                _JSONString(d["item_date"]) <*>
-                _JSONInt(d["UtcOffset"]) <*>
-                _JSONInt(d["channelID"])
-        }
+    static func decode(_ json: JSON) -> Decoded<TVGridProgram>? {
+        return curry(TVGridProgram.init)
+            <^> json <| "advisory"
+            <*> json <| "bookmarked"
+            <*> json <| "description"
+            <*> json <| "id"
+            <*> json <| "imageCount"
+            <*> json <| "length"
+            <*> json <| "name"
+            <*> json <| "recorded"
+            <*> json <| "startOffset"
+            <*> json <| "startTime"
+            <*> json <| "item_date"
+            <*> json <| "UtcOffset"
+            <*> json <| "channelID"
     }
     
     static func arrayKey() ->String{
